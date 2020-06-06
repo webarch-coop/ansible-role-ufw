@@ -11,20 +11,24 @@
     - name: Run allow rules
       ufw:
         rule: allow
-        port: "{{ item.port }}"
-        proto: "{{ item.proto }}"
-        src: "{{ item.src | default(omit) }}"
+        port: "{{ rule.port }}"
+        proto: "{{ rule.proto }}"
+        src: "{{ rule.src | default(omit) }}"
         state: enabled
-      with_items: "{{ ufw_allow_rules }}"
+      loop: "{{ ufw_allow_rules }}"
+      loop_control:
+        loop_var: rule
       notify: Restart ufw
 
     - name: Run disallow rules
       ufw:
         rule: deny
-        port: "{{ item.port }}"
-        proto: "{{ item.proto }}"
+        port: "{{ rule.port }}"
+        proto: "{{ rule.proto }}"
         state: enabled
-      with_items: "{{ ufw_disallow_rules }}"
+      loop: "{{ ufw_disallow_rules }}"
+      loop_control:
+        loop_var: rule
       notify: Restart ufw
 
     - name: Default policy deny
