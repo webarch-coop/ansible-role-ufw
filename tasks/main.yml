@@ -13,6 +13,7 @@
         rule: allow
         port: "{{ item.port }}"
         proto: "{{ item.proto }}"
+        src: "{{ item.src | default(omit) }}"
         state: enabled
       with_items: "{{ ufw_allow_rules }}"
       notify: Restart ufw
