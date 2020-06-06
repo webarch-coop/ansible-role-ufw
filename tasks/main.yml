@@ -1,0 +1,42 @@
+---
+- name: Install and configure UFW
+  block:
+
+    - name: Install ufw
+      apt:
+        name: ufw
+        state: present
+        update_cache: true
+
+    - name: Run allow rules
+      ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+        state: enabled
+      with_items: "{{ ufw_allow_rules }}"
+      notify: Restart ufw
+
+    - name: Run disallow rules
+      ufw:
+        rule: deny
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+        state: enabled
+      with_items: "{{ ufw_disallow_rules }}"
+      notify: Restart ufw
+
+    - name: Default policy deny
+      ufw:
+        policy: deny
+      when: ufw_default_policy_deny
+
+    - name: Enable the firewall
+      ufw:
+        state: enabled
+      tags:
+        - molecule-notest
+
+  tags:
+    - ufw
+...
