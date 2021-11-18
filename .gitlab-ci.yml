@@ -1,6 +1,11 @@
 ---
 image: registry.git.coop/webarch/containers/images/ci:0.3.0
 
+before_script:
+  - ansible --version
+  - ansible-lint --version
+  - yamllint --version
+
 test:
   script:
     - molecule lint
