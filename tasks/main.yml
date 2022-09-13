@@ -27,9 +27,10 @@
     - name: Run allow rules
       community.general.ufw:
         rule: allow
+        direction: incoming
         port: "{{ rule.port }}"
         proto: "{{ rule.proto }}"
-        src: "{{ rule.src | default(omit) }}"
+        from_ip: "{{ rule.from_ip | default(omit) }}"
         state: enabled
       loop: "{{ ufw_allow_rules }}"
       loop_control:
@@ -39,6 +40,7 @@
     - name: Run disallow rules
       community.general.ufw:
         rule: deny
+        direction: incoming
         port: "{{ rule.port }}"
         proto: "{{ rule.proto }}"
         state: enabled
@@ -50,11 +52,14 @@
     - name: Default policy deny
       community.general.ufw:
         policy: deny
-      when: ufw_default_policy_deny
+        direction: incoming
+      notify: Restart ufw
+      when: ufw_default_policy_deny | bool
 
     - name: Enable the firewall
       community.general.ufw:
         state: enabled
+      notify: Restart ufw
 
   when: ufw | bool
   tags:
