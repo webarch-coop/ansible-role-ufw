@@ -52,7 +52,7 @@
     - name: Default policy deny
       community.general.ufw:
         policy: deny
-        direction: in
+        direction: incoming
       notify: Restart ufw
       when: ufw_default_policy_deny | bool
 
