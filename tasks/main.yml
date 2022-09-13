@@ -27,7 +27,7 @@
     - name: Run allow rules
       community.general.ufw:
         rule: allow
-        direction: incoming
+        direction: in
         port: "{{ rule.port }}"
         proto: "{{ rule.proto }}"
         from_ip: "{{ rule.from_ip | default(omit) }}"
@@ -40,7 +40,7 @@
     - name: Run disallow rules
       community.general.ufw:
         rule: deny
-        direction: incoming
+        direction: in
         port: "{{ rule.port }}"
         proto: "{{ rule.proto }}"
         state: enabled
@@ -52,7 +52,7 @@
     - name: Default policy deny
       community.general.ufw:
         policy: deny
-        direction: incoming
+        direction: in
       notify: Restart ufw
       when: ufw_default_policy_deny | bool
 
