@@ -1,4 +1,5 @@
 ---
+ufw: true
 ufw_allow_rules: []
 ufw_disallow_rules: []
 ufw_default_policy_deny: true

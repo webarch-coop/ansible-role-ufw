@@ -3,14 +3,29 @@
   block:
 
     - name: Install ufw
-      apt:
+      ansible.builtin.apt:
         pkg:
           - ufw
         state: present
         update_cache: true
 
+    - name: Get the UFW status
+      ansible.builtin.command: ufw status
+      check_mode: false
+      changed_when: false
+      register: ufw_check_status
+
+    - name: Set a fact for the UFW status
+      ansible.builtin.set_fact:
+        ufw_status: "{{ ufw_check_status.stdout | community.general.jc('ufw') }}"
+
+    - name: Debug UFW status
+      ansible.builtin.debug:
+        var: ufw_status
+        verbosity: 2
+
     - name: Run allow rules
-      ufw:
+      community.general.ufw:
         rule: allow
         port: "{{ rule.port }}"
         proto: "{{ rule.proto }}"
@@ -22,7 +37,7 @@
       notify: Restart ufw
 
     - name: Run disallow rules
-      ufw:
+      community.general.ufw:
         rule: deny
         port: "{{ rule.port }}"
         proto: "{{ rule.proto }}"
@@ -33,16 +48,15 @@
       notify: Restart ufw
 
     - name: Default policy deny
-      ufw:
+      community.general.ufw:
         policy: deny
       when: ufw_default_policy_deny
 
     - name: Enable the firewall
-      ufw:
+      community.general.ufw:
         state: enabled
-      tags:
-        - molecule-notest
 
+  when: ufw | bool
   tags:
     - ufw
 ...
