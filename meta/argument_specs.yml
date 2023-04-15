@@ -1,0 +1,61 @@
+# Copyright 2020-2023 Luke Murphy and Chris Croome
+#
+# This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+argument_specs:
+  main:
+    author: Chris Croome
+    description: An Ansible to configure the Ubuntu UFW - Uncomplicated Firewall.
+    short_description: The main entry point for the UFW role.
+    options:
+      ufw:
+        type: bool
+        required: true
+        description: Run the tasks in this role.
+      ufw_allow_rules:
+        type: list
+        required: false
+        description: A list of UFW allow rules.
+        options:
+          from_ip:
+            type: str
+            required: false
+            description: A IP address that the connection is allowed from.
+          port:
+            type: str
+            required: true
+            description: The port, or range of ports to open.
+          proto:
+            type: str
+            required: true
+            description: The IP protocol.
+            choices:
+              - tcp
+              - udp
+      ufw_disallow_rules:
+        type: list
+        required: false
+        description: A list of UFW disallow rules.
+        options:
+          port:
+            type: str
+            required: true
+            description: The port, or range of ports to close.
+          proto:
+            type: str
+            required: true
+            description: The IP protocol.
+            choices:
+              - tcp
+              - udp
+      ufw_default_policy_deny:
+        type: bool
+        required: false
+        description: Set the default [olicy to deny.
+...
