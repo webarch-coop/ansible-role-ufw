@@ -33,13 +33,22 @@
         var: ufw_status
         verbosity: 2
 
-    - name: Run allow rules
+    - name: Policy deny
+      community.general.ufw:
+        policy: deny
+        direction: incoming
+      notify: Restart ufw
+      when:
+        - ufw_default_policy_deny is defined
+        - ufw_default_policy_deny | bool
+
+    - name: Allow rules
       community.general.ufw:
         rule: allow
         direction: in
         port: "{{ ufw_rule.port }}"
         proto: "{{ ufw_rule.proto }}"
-        from_ip: "{{ ufw_rule.from_ip | default(omit) }}"
+        from_ip: "{{ ufw_rule.from_ip | default('any') }}"
         state: enabled
       loop: "{{ ufw_allow_rules }}"
       loop_control:
@@ -49,7 +58,7 @@
         - ufw_allow_rules != []
       notify: Restart ufw
 
-    - name: Run disallow rules
+    - name: Deny rules
       community.general.ufw:
         rule: deny
         direction: in
@@ -63,15 +72,6 @@
         - ufw_disallow_rules is defined
         - ufw_disallow_rules != []
       notify: Restart ufw
-
-    - name: Default policy deny
-      community.general.ufw:
-        policy: deny
-        direction: incoming
-      notify: Restart ufw
-      when:
-        - ufw_default_policy_deny is defined
-        - ufw_default_policy_deny | bool
 
     - name: Enable the firewall
       community.general.ufw:

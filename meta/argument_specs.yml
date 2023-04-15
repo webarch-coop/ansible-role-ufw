@@ -34,8 +34,14 @@ argument_specs:
           proto:
             type: str
             required: true
-            description: The IP protocol.
+            description: The protocol for the rule.
             choices:
+              - ah
+              - any
+              - esp
+              - gre
+              - igmp
+              - ipv6
               - tcp
               - udp
       ufw_disallow_rules:
