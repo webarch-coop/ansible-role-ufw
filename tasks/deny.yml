@@ -1,0 +1,41 @@
+# Copyright 2020-2023 Luke Murphy and Chris Croome
+#
+# This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+- name: UFW deny rules
+  block:
+
+    - name: Name based deny rule
+      community.general.ufw:
+        name: "{{ ufw_rule.name }}"
+        rule: deny
+        direction: in
+        comment: "Ansible rule{% if ufw_rule.comment is defined %} {{ ufw_rule.comment }}{% endif %}"
+      notify: Restart ufw
+      when:
+        - ufw_rule.name is defined
+        - ufw_rule.port is not defined
+        - ufw_rule.proto is not defined
+
+    - name: Name based port rule
+      community.general.ufw:
+        rule: deny
+        direction: in
+        port: "{{ ufw_rule.port }}"
+        proto: "{{ ufw_rule.proto | default('tcp') }}"
+        comment: "Ansible rule{% if ufw_rule.comment is defined %} {{ ufw_rule.comment }}{% endif %}"
+      notify: Restart ufw
+      when:
+        - ufw_rule.name is not defined
+        - ufw_rule.port is defined
+        - ufw_rule.proto is defined
+
+  tags:
+    - ufw
+...

@@ -42,36 +42,23 @@
         - ufw_default_policy_deny is defined
         - ufw_default_policy_deny | bool
 
-    - name: Allow rules
-      community.general.ufw:
-        rule: allow
-        direction: in
-        port: "{{ ufw_rule.port }}"
-        proto: "{{ ufw_rule.proto }}"
-        from_ip: "{{ ufw_rule.from_ip | default('any') }}"
-        state: enabled
+    - name: Include allow tasks
+      ansible.builtin.include_tasks: allow.yml
       loop: "{{ ufw_allow_rules }}"
       loop_control:
         loop_var: ufw_rule
       when:
         - ufw_allow_rules is defined
         - ufw_allow_rules != []
-      notify: Restart ufw
 
-    - name: Deny rules
-      community.general.ufw:
-        rule: deny
-        direction: in
-        port: "{{ ufw_rule.port }}"
-        proto: "{{ ufw_rule.proto }}"
-        state: enabled
-      loop: "{{ ufw_disallow_rules }}"
+    - name: Include deny tasks
+      ansible.builtin.include_tasks: deny.yml
+      loop: "{{ ufw_deny_rules }}"
       loop_control:
         loop_var: ufw_rule
       when:
-        - ufw_disallow_rules is defined
-        - ufw_disallow_rules != []
-      notify: Restart ufw
+        - ufw_deny_rules is defined
+        - ufw_deny_rules != []
 
     - name: Enable the firewall
       community.general.ufw:
