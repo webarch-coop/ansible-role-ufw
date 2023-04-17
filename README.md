@@ -6,15 +6,14 @@ Ansible role to configure the Ubuntu [UFW - Uncomplicated Firewall](https://help
 
 ## Usage
 
-An example configuration to only allow SSH and Mosh:
+An example configuration to only allow SSH and Icinga:
 
 ```yml
 ufw: true
 ufw_allow_rules:
-  - port: ssh
-    proto: tcp
-  - port: 60000:61000
-    proto: udp
+  - app: OpenSSH
+  - comment: Icinga
+    port: 5665
 ```
 
 ## References

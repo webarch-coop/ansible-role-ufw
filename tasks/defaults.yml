@@ -8,13 +8,36 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-ufw: true
-ufw_allow_rules: []
-ufw_disallow_rules: []
-ufw_defaults:
-  IPV6: "no"
-ufw_default_policy_deny: true
-ufw_pkgs:
-  - ufw
-ufw_verify: true
+- name: UFW defaults tasks
+  block:
+
+    - name: Check the /etc/default/ufw file
+      ansible.builtin.stat:
+        path: /etc/default/ufw
+      register: ufw_defaults_path
+
+    - name: Loop through the defaults for /etc/default/ufw
+      community.general.ini_file:
+        path: /etc/default/ufw
+        create: true
+        mode: "0644"
+        owner: root
+        group: root
+        no_extra_spaces: true
+        section: null
+        option: "{{ ufw_default.key }}"
+        value: "{{ ufw_default.value }}"
+      loop: "{{ ufw_defaults | dict2items }}"
+      loop_control:
+        loop_var: ufw_default
+        label: "{{ ufw_default.key }}"
+      notify:
+        - Disable ufw
+        - Enable ufw
+      when:
+        - ufw_defaults_path is defined
+        - ufw_defaults_path.stat.exists
+
+  tags:
+    - ufw
 ...

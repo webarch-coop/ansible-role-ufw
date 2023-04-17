@@ -1,0 +1,117 @@
+# Copyright 2020-2023 Luke Murphy and Chris Croome
+#
+# This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+- name: UFW checks
+  block:
+
+    - name: Check that UFW is installed
+      ansible.builtin.assert:
+        that:
+          - ( "ufw" in ansible_local.dpkg.installed )
+        quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
+
+    - name: Check that /etc/ufw/applications.d is present
+      ansible.builtin.stat:
+        path: /etc/ufw/applications.d
+      register: ufw_apps_d_path
+
+    - name: Check /etc/ufw/applications.d/*
+      block:
+
+        - name: Cat and register the contents of all the files in /etc/ufw/applications.d
+          ansible.builtin.shell: cat /etc/ufw/applications.d/*
+          args:
+            executable: "{{ ansible_local.bash.path }}"
+          check_mode: false
+          changed_when: false
+          register: ufw_apps_available_d
+
+        - name: Set a fact for the UFW applications available
+          ansible.builtin.set_fact:
+            ufw_apps_available: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') }}"
+
+        - name: Debug the UFW applications available
+          ansible.builtin.debug:
+            var: ufw_apps_available
+            verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+
+      when:
+        - ufw_apps_d_path is defined
+        - ufw_apps_d_path.stat.exists | bool
+
+    - name: Check that all named allow rules are present
+      ansible.builtin.assert:
+        that:
+          - ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) == []
+        quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
+        fail_msg: "The specified{% for ufw_app_rule in ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_app_rule }}{% endfor %} rule(s) were not found in /etc/ufw/applications.d"
+      when:
+        - ufw_allow_rules is defined
+        - ufw_allow_rules != []
+        - ufw_app_allow_rules is defined
+        - ufw_app_allow_rules != []
+        - ufw_apps_available_names is defined
+        - ufw_apps_available_names != []
+
+    - name: Check that all named deny rules are present
+      ansible.builtin.assert:
+        that:
+          - ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) == []
+        quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
+        fail_msg: "The specified{% for ufw_app_rule in ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_app_rules }}{% endfor %} rule(s) were not found in /etc/ufw/applications.d"
+      when:
+        - ufw_deny_rules is defined
+        - ufw_deny_rules != []
+        - ufw_app_deny_rules is defined
+        - ufw_app_deny_rules != []
+        - ufw_apps_available_names is defined
+        - ufw_apps_available_names != []
+
+    - name: Loop through the allow rules to check that ther have either app or ports specified
+      ansible.builtin.assert:
+        that:
+          - ( ufw_rule.app is defined ) or ( ufw_rule.port is defined )
+      loop: "{{ ufw_allow_rules }}"
+      loop_control:
+        loop_var: ufw_rule
+      when:
+        - ufw_allow_rules is defined
+        - ufw_allow_rules != []
+
+    - name: Loop through the deny rules to check that ther have either app or ports specified
+      ansible.builtin.assert:
+        that:
+          - ( ufw_rule.app is defined ) or ( ufw_rule.port is defined )
+      loop: "{{ ufw_deny_rules }}"
+      loop_control:
+        loop_var: ufw_rule
+      when:
+        - ufw_deny_rules is defined
+        - ufw_deny_rules != []
+
+    - name: Get the UFW status
+      ansible.builtin.command: ufw status
+      check_mode: false
+      changed_when: false
+      register: ufw_check_status
+
+    - name: Set a fact for the UFW status
+      ansible.builtin.set_fact:
+        ufw_status: "{{ ufw_check_status.stdout | string | community.general.jc('ufw') }}"
+
+    - name: Debug UFW status
+      ansible.builtin.debug:
+        var: ufw_status
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+
+  when: ufw | bool
+  tags:
+    - ufw
+...

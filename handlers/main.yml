@@ -8,8 +8,19 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
+- name: Disable ufw
+  community.general.ufw:
+    state: disabled
+  listen: Disable ufw
+
+- name: Enable ufw
+  community.general.ufw:
+    state: enabled
+  listen: Enable ufw
+
 - name: Restart ufw
   ansible.builtin.service:
     name: ufw
     state: restarted
+  listen: Restart ufw
 ...

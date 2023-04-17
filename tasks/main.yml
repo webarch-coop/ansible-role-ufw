@@ -11,27 +11,48 @@
 - name: Install and configure UFW
   block:
 
-    - name: Install ufw
+    - name: Verify variables that start with ufw_
+      ansible.builtin.include_tasks: verify.yml
+      when:
+        - ufw_verify is defined
+        - ufw_verify | bool
+
+    - name: Include apt role local fact tasks
+      ansible.builtin.include_role:
+        name: apt
+        tasks_from: local_facts.yml
+      when: >-
+        ( ansible_local.dpkg.arch is not defined ) or
+        ( ansible_local.gpg.version is not defined ) or
+        ( ansible_local.bash.path is not defined )
+
+    - name: UFW packages present
       ansible.builtin.apt:
-        pkg:
-          - ufw
+        pkg: "{{ ufw_pkgs }}"
         state: present
-        update_cache: true
+      when:
+        - ufw_pkgs is defined
+        - ufw_pkgs != []
+        - ufw_pkgs | difference(ansible_local.dpkg.installed) != []
 
-    - name: Get the UFW status
-      ansible.builtin.command: ufw status
-      check_mode: false
-      changed_when: false
-      register: ufw_check_status
+    - name: UFW applications present
+      ansible.builtin.include_tasks: app.yml
+      loop: "{{ ufw_apps }}"
+      loop_control:
+        loop_var: ufw_app
+        label: "{{ ufw_app.app }}"
+      when:
+        - ufw_apps is defined
+        - ufw_apps != []
 
-    - name: Set a fact for the UFW status
-      ansible.builtin.set_fact:
-        ufw_status: "{{ ufw_check_status.stdout | string | community.general.jc('ufw') }}"
+    - name: Include the UFW check tasks
+      ansible.builtin.include_tasks: checks.yml
 
-    - name: Debug UFW status
-      ansible.builtin.debug:
-        var: ufw_status
-        verbosity: 2
+    - name: Include UFW defaults tasks
+      ansible.builtin.include_tasks: defaults.yml
+      when:
+        - ufw_defaults is defined
+        - ufw_defaults != {}
 
     - name: Policy deny
       community.general.ufw:

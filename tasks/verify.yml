@@ -8,13 +8,26 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-ufw: true
-ufw_allow_rules: []
-ufw_disallow_rules: []
-ufw_defaults:
-  IPV6: "no"
-ufw_default_policy_deny: true
-ufw_pkgs:
-  - ufw
-ufw_verify: true
+- name: Verify variables startingh with ufw_
+  block:
+
+    - name: Debug the hostvars variable names that start with ufw_
+      ansible.builtin.debug:
+        var: ufwvarnames
+        verbosity: "{% if ansible_check_mode | bool %}3{% else %}4{% endif %}"
+
+    - name: Debug the hostvars variable names that start with ufw_
+      ansible.builtin.debug:
+        var: ufwhostvars
+        verbosity: "{% if ansible_check_mode | bool %}3{% else %}4{% endif %}"
+
+    - name: Check ufw_ variables using meta/argument_specs.yml
+      ansible.builtin.validate_argument_spec:
+        argument_spec: "{{ (lookup('ansible.builtin.file', 'meta/argument_specs.yml') | from_yaml)['argument_specs']['main']['options'] }}"
+        provided_arguments: "{{ ufwhostvars }}"
+
+
+  when: ufw_verify | bool
+  tags:
+    - ufw
 ...

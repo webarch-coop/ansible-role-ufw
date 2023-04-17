@@ -1,0 +1,111 @@
+# Copyright 2020-2023 Luke Murphy and Chris Croome
+#
+# This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+- name: UFW application file
+  block:
+
+    - name: UFW applications.d directory present
+      ansible.builtin.file:
+        path: /etc/ufw/applications.d/
+        state: directory
+        mode: "0755"
+        owner: root
+        group: root
+
+    - name: Debug UWF app
+      ansible.builtin.debug:
+        var: ufw_app
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+
+    # Check if ufw_app.path exists
+    # Slurp ufw_app.path if it exists
+    # Only edit ufw_app.path if required
+    # Run ufw app update {{ ufw_app.path | basename }} if it has changed
+
+    - name: UFW application title configuration present
+      community.general.ini_file:
+        path: "{{ ufw_app.path }}"
+        create: true
+        mode: "0644"
+        owner: root
+        group: root
+        no_extra_spaces: true
+        section: "{{ ufw_app.app }}"
+        option: title
+        value: "{{ ufw_app.app }}"
+
+    - name: UFW application description configuration present
+      community.general.ini_file:
+        path: "{{ ufw_app.path }}"
+        create: true
+        mode: "0644"
+        owner: root
+        group: root
+        no_extra_spaces: true
+        section: "{{ ufw_app.app }}"
+        option: description
+        value: "{{ ufw_app.desc }}"
+
+    - name: UFW application ports configuration present
+      community.general.ini_file:
+        path: "{{ ufw_app.path }}"
+        create: true
+        mode: "0644"
+        owner: root
+        group: root
+        no_extra_spaces: true
+        section: "{{ ufw_app.app }}"
+        option: ports
+        value: "{{ ufw_app.ports }}"
+
+    - name: Check if the UFW application file exists
+      ansible.builtin.stat:
+        path: "{{ ufw_app.path }}"
+      register: ufw_app_path
+
+    - name: First, comment and last lines present in the UFW application file
+      block:
+
+        - name: Ansible managed comment present at the top of the file
+          ansible.builtin.lineinfile:
+            path: "{{ ufw_app.path }}"
+            line: "# Ansible managed"
+            state: present
+            insertbefore: BOF
+            mode: "0644"
+            owner: root
+            group: root
+
+        - name: UFW comment present at the top of the file
+          ansible.builtin.lineinfile:
+            path: "{{ ufw_app.path }}"
+            line: "# {{ ufw_app.comment }}"
+            state: present
+            insertafter: '^# Ansible managed$'
+            mode: "0644"
+            owner: root
+            group: root
+          when: ufw_app.comment is defined
+
+        - name: Vim syntaxhighlighting modeline present at the end of the file
+          ansible.builtin.lineinfile:
+            path: "{{ ufw_app.path }}"
+            line: "# vim: syntax=dosini"
+            state: present
+            insertafter: EOF
+            mode: "0644"
+            owner: root
+            group: root
+
+      when: ufw_app_path.stat.exists | bool
+
+  tags:
+    - ufw
+...

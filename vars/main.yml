@@ -8,13 +8,18 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-ufw: true
-ufw_allow_rules: []
-ufw_disallow_rules: []
-ufw_defaults:
-  IPV6: "no"
-ufw_default_policy_deny: true
-ufw_pkgs:
-  - ufw
-ufw_verify: true
+# https://docs.ansible.com/ansible/latest/playbook_guide/complex_data_manipulation.html
+ufwvarnames: "{{ q('varnames', '^ufw_') | sort }}"
+ufwhostvars: "{{ dict(ufwvarnames | list | zip(q('vars', *ufwvarnames))) }}"
+
+# This variable is populated when the role is run
+# cat /etc/ufw/applications.d/* | jc --ini -yp
+ufw_apps_available: {}
+
+# ufw app list
+# cat /etc/ufw/applications.d/* | jc --ini -p | jq 'keys' | yq -o=json -P
+ufw_apps_available_names: "{{ ufw_apps_available.keys() }}"
+
+ufw_app_allow_rules: "{{ ufw_allow_rules | community.general.json_query('[].app') }}"
+ufw_app_deny_rules: "{{ ufw_deny_rules | community.general.json_query('[].app') }}"
 ...

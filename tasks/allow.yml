@@ -11,18 +11,20 @@
 - name: UFW allow rules
   block:
 
-    - name: Name based allow rule
+    - name: App allow rule
       community.general.ufw:
-        name: "{{ ufw_rule.name }}"
         rule: allow
+        direction: in
+        app: "{{ ufw_rule.app }}"
+        from_ip: "{{ ufw_rule.from_ip | default('any') }}"
         comment: "Ansible rule{% if ufw_rule.comment is defined %} {{ ufw_rule.comment }}{% endif %}"
       notify: Restart ufw
       when:
-        - ufw_rule.name is defined
+        - ufw_rule.app is defined
         - ufw_rule.port is not defined
         - ufw_rule.proto is not defined
 
-    - name: Port based allow rule
+    - name: Port allow rule
       community.general.ufw:
         rule: allow
         direction: in
@@ -32,7 +34,7 @@
         comment: "Ansible rule{% if ufw_rule.comment is defined %} {{ ufw_rule.comment }}{% endif %}"
       notify: Restart ufw
       when:
-        - ufw_rule.name is not defined
+        - ufw_rule.app is not defined
         - ufw_rule.port is defined
         - ufw_rule.proto is defined
 

@@ -23,10 +23,14 @@ argument_specs:
         required: false
         description: A list of UFW allow rules.
         options:
+          app:
+            type: str
+            required: false
+            description: A UFW application.
           from_ip:
             type: str
             required: false
-            description: A IP address that the connection is allowed from.
+            description: IP address(s) that the connection is allowed from.
           port:
             type: str
             required: true
@@ -44,11 +48,60 @@ argument_specs:
               - ipv6
               - tcp
               - udp
+      ufw_app_allow_rules:
+        type: list
+        required: false
+        description: Internal list of named allow rules.
+      ufw_app_deny_rules:
+        type: list
+        required: false
+        description: Internal list of named deny rules.
+      ufw_apps_available_names:
+        type: list
+        required: false
+        description: Internal list of UFW application names.
+      ufw_apps_available:
+        type: dict
+        required: false
+        description: Internal dictyionary of all applications.
+      ufw_apps:
+        type: list
+        elements: dict
+        required: false
+        options:
+          app:
+            type: str
+            required: true
+            description: The UFW application name and title.
+          comment:
+            type: str
+            required: false
+            description: An optional comment to add to UFW application file.
+          desc:
+            type: str
+            required: true
+            description: The UFW application description.
+          path:
+            type: str
+            required: true
+            description: The UFW application file path.
+          ports:
+            type: str
+            required: true
+            description: The UFW application ports.
+      ufw_defaults:
+        type: dict
+        required: false
+        description: UFW defaults in /etc/default/ufw.
       ufw_disallow_rules:
         type: list
         required: false
         description: A list of UFW disallow rules.
         options:
+          app:
+            type: str
+            required: false
+            description: A UFW application.
           port:
             type: str
             required: true
@@ -64,4 +117,13 @@ argument_specs:
         type: bool
         required: false
         description: Set the default [olicy to deny.
+      ufw_pkgs:
+        type: list
+        elements: str
+        required: false
+        description: Debian / Ubuntu packages to be installed.
+      ufw_verify:
+        type: bool
+        required: false
+        description: Verify all variables that start with ufw_.
 ...

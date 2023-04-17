@@ -11,19 +11,20 @@
 - name: UFW deny rules
   block:
 
-    - name: Name based deny rule
+    - name: App deny rule
       community.general.ufw:
-        name: "{{ ufw_rule.name }}"
+        name: "{{ ufw_rule.app }}"
         rule: deny
         direction: in
         comment: "Ansible rule{% if ufw_rule.comment is defined %} {{ ufw_rule.comment }}{% endif %}"
       notify: Restart ufw
       when:
-        - ufw_rule.name is defined
+        - ufw_rule.app is defined
+        - ufw_rule.app | length > 0
         - ufw_rule.port is not defined
         - ufw_rule.proto is not defined
 
-    - name: Name based port rule
+    - name: Port deny rule
       community.general.ufw:
         rule: deny
         direction: in
@@ -32,9 +33,11 @@
         comment: "Ansible rule{% if ufw_rule.comment is defined %} {{ ufw_rule.comment }}{% endif %}"
       notify: Restart ufw
       when:
-        - ufw_rule.name is not defined
+        - ufw_rule.app is not defined
         - ufw_rule.port is defined
+        - ufw_rule.port | length > 0
         - ufw_rule.proto is defined
+        - ufw_rule.proto | length > 0
 
   tags:
     - ufw
