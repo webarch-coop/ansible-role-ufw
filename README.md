@@ -65,6 +65,7 @@ An optional string to use with the `from_ip` parameter of the [community.general
 
 An optional list of UFW application profiles to create or edit in the `/etc/ufw/applications.d/` directory, each item in the list requires a `app`for the application name, title and file name if `path` is not specified, a `desc` for the applicatiion description and a `ports` string. Optional variables are `path` and `comment`, see the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
 
+<div style="margin-left: 2em">
 #### app
 
 A required string, the application name, which is also used as the application title when a `title` is not prtovided.
@@ -88,6 +89,7 @@ A string, a `|`-separated list of ports/protocols where the protocol is optional
 #### title
 
 A string, an optional application title, the application name is used if a title is not provided.
+</div>
 
 ### ufw_config
 
