@@ -35,6 +35,9 @@
         - ufw_pkgs != []
         - ufw_pkgs | difference(ansible_local.dpkg.installed) != []
 
+    - name: Include the UFW check tasks
+      ansible.builtin.include_tasks: checks.yml
+
     - name: UFW applications present
       ansible.builtin.include_tasks: app.yml
       loop: "{{ ufw_apps }}"
@@ -45,14 +48,15 @@
         - ufw_apps is defined
         - ufw_apps != []
 
-    - name: Include the UFW check tasks
-      ansible.builtin.include_tasks: checks.yml
-
-    - name: Include UFW defaults tasks
-      ansible.builtin.include_tasks: defaults.yml
+    - name: Include UFW config tasks
+      ansible.builtin.include_tasks: config.yml
+      loop: "{{ ufw_config }}"
+      loop_control:
+        loop_var: ufw_conf
+        label: "{{ ufw_conf.path }}"
       when:
-        - ufw_defaults is defined
-        - ufw_defaults != {}
+        - ufw_config is defined
+        - ufw_config != {}
 
     - name: Policy deny
       community.general.ufw:

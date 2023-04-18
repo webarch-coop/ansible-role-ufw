@@ -63,11 +63,12 @@ argument_specs:
       ufw_apps_available:
         type: dict
         required: false
-        description: Internal dictyionary of all applications.
+        description: Internal dictionary of all applications.
       ufw_apps:
         type: list
         elements: dict
         required: false
+        description: UFW applications to create or edit.
         options:
           app:
             type: str
@@ -83,16 +84,26 @@ argument_specs:
             description: The UFW application description.
           path:
             type: str
-            required: true
+            required: false
             description: The UFW application file path.
           ports:
             type: str
             required: true
             description: The UFW application ports.
-      ufw_defaults:
-        type: dict
+      ufw_config:
+        type: list
+        elements: dict
         required: false
-        description: UFW defaults in /etc/default/ufw.
+        description: UFW configuration.
+        options:
+          path:
+            type: str
+            required: true
+            description: The UFW configuration file path.
+          conf:
+            type: dict
+            required: true
+            description: A YAML dictionary of the configuration that should be present in the file after converting it into INI format.
       ufw_disallow_rules:
         type: list
         required: false

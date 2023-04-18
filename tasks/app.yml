@@ -11,27 +11,25 @@
 - name: UFW application file
   block:
 
-    - name: UFW applications.d directory present
-      ansible.builtin.file:
-        path: /etc/ufw/applications.d/
-        state: directory
-        mode: "0755"
-        owner: root
-        group: root
-
-    - name: Debug UWF app
+    - name: Debug UFW proposed app variables
       ansible.builtin.debug:
         var: ufw_app
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
 
-    # Check if ufw_app.path exists
-    # Slurp ufw_app.path if it exists
-    # Only edit ufw_app.path if required
-    # Run ufw app update {{ ufw_app.path | basename }} if it has changed
+    - name: Set a variable for the existing app configuration
+      ansible.builtin.set_fact:
+        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_app.app) | default(null) }}"
+      when:
+        - ufw_apps_available is defined
+        - ufw_apps_available != {}
+
+    - name: Set a variable for the app default path
+      ansible.builtin.set_fact:
+        ufw_app_default_path: "/etc/ufw/applications.d/{{ ufw_app.app | lower | ansible.builtin.regex_replace('[ ]-', '_') | ansible.builtin.regex_search('^[a-z0-9_]{1,18}') }}"
 
     - name: UFW application title configuration present
       community.general.ini_file:
-        path: "{{ ufw_app.path }}"
+        path: "{{ ufw_app.path | default(ufw_app_default_path) }}"
         create: true
         mode: "0644"
         owner: root
@@ -40,10 +38,14 @@
         section: "{{ ufw_app.app }}"
         option: title
         value: "{{ ufw_app.app }}"
+      register: ufw_app_title
+      when: >-
+       ( ufw_app_existing_conf == "null" ) or
+       ( ufw_app_existing_conf.title != ufw_app.app )
 
     - name: UFW application description configuration present
       community.general.ini_file:
-        path: "{{ ufw_app.path }}"
+        path: "{{ ufw_app.path | default(ufw_app_default_path) }}"
         create: true
         mode: "0644"
         owner: root
@@ -52,10 +54,14 @@
         section: "{{ ufw_app.app }}"
         option: description
         value: "{{ ufw_app.desc }}"
+      register: ufw_app_description
+      when: >-
+       ( ufw_app_existing_conf == "null" ) or
+       ( ufw_app_existing_conf.description != ufw_app.desc )
 
     - name: UFW application ports configuration present
       community.general.ini_file:
-        path: "{{ ufw_app.path }}"
+        path: "{{ ufw_app.path | default(ufw_app_default_path) }}"
         create: true
         mode: "0644"
         owner: root
@@ -64,10 +70,14 @@
         section: "{{ ufw_app.app }}"
         option: ports
         value: "{{ ufw_app.ports }}"
+      register: ufw_app_ports
+      when: >-
+       ( ufw_app_existing_conf == "null" ) or
+       ( ufw_app_existing_conf.ports != ufw_app.ports )
 
     - name: Check if the UFW application file exists
       ansible.builtin.stat:
-        path: "{{ ufw_app.path }}"
+        path: "{{ ufw_app.path | default(ufw_app_default_path) }}"
       register: ufw_app_path
 
     - name: First, comment and last lines present in the UFW application file
@@ -75,7 +85,7 @@
 
         - name: Ansible managed comment present at the top of the file
           ansible.builtin.lineinfile:
-            path: "{{ ufw_app.path }}"
+            path: "{{ ufw_app.path | default(ufw_app_default_path) }}"
             line: "# Ansible managed"
             state: present
             insertbefore: BOF
@@ -85,7 +95,7 @@
 
         - name: UFW comment present at the top of the file
           ansible.builtin.lineinfile:
-            path: "{{ ufw_app.path }}"
+            path: "{{ ufw_app.path | default(ufw_app_default_path) }}"
             line: "# {{ ufw_app.comment }}"
             state: present
             insertafter: '^# Ansible managed$'
@@ -96,7 +106,7 @@
 
         - name: Vim syntaxhighlighting modeline present at the end of the file
           ansible.builtin.lineinfile:
-            path: "{{ ufw_app.path }}"
+            path: "{{ ufw_app.path | default(ufw_app_default_path) }}"
             line: "# vim: syntax=dosini"
             state: present
             insertafter: EOF
@@ -105,6 +115,21 @@
             group: root
 
       when: ufw_app_path.stat.exists | bool
+
+    - name: Check and register updated UFW application
+      block:
+
+        - name: UFW update application
+          ansible.builtin.command: "ufw app update {{ ufw_app.path | basename }}"
+          changed_when: true
+
+        - name: Include the /etc/ufw/applications.d/* checks
+          ansible.builtin.include_tasks: check_apps.yml
+
+      when: >-
+        ( ( ufw_app_title.changed is defined ) and ( ufw_app_title.changed | bool ) ) or
+        ( ( ufw_app_description.changed is defined ) and ( ufw_app_description.changed | bool ) ) or
+        ( ( ufw_app_ports.changed is defined ) and ( ufw_app_ports.changed | bool ) )
 
   tags:
     - ufw

@@ -8,35 +8,25 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-- name: UFW defaults tasks
+- name: UFW check applications
   block:
 
-    - name: Check the /etc/default/ufw file
-      ansible.builtin.stat:
-        path: /etc/default/ufw
-      register: ufw_defaults_path
+    - name: Cat and register the contents of all the files in /etc/ufw/applications.d
+      ansible.builtin.shell: cat /etc/ufw/applications.d/*
+      args:
+        executable: "{{ ansible_local.bash.path }}"
+      check_mode: false
+      changed_when: false
+      register: ufw_apps_available_d
 
-    - name: Loop through the defaults for /etc/default/ufw
-      community.general.ini_file:
-        path: /etc/default/ufw
-        create: true
-        mode: "0644"
-        owner: root
-        group: root
-        no_extra_spaces: true
-        section: null
-        option: "{{ ufw_default.key }}"
-        value: "{{ ufw_default.value }}"
-      loop: "{{ ufw_defaults | dict2items }}"
-      loop_control:
-        loop_var: ufw_default
-        label: "{{ ufw_default.key }}"
-      notify:
-        - Disable ufw
-        - Enable ufw
-      when:
-        - ufw_defaults_path is defined
-        - ufw_defaults_path.stat.exists
+    - name: Set a fact for the UFW applications available
+      ansible.builtin.set_fact:
+        ufw_apps_available: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') }}"
+
+    - name: Debug the UFW applications available
+      ansible.builtin.debug:
+        var: ufw_apps_available
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
 
   tags:
     - ufw

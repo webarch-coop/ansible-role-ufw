@@ -17,34 +17,8 @@
           - ( "ufw" in ansible_local.dpkg.installed )
         quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
 
-    - name: Check that /etc/ufw/applications.d is present
-      ansible.builtin.stat:
-        path: /etc/ufw/applications.d
-      register: ufw_apps_d_path
-
-    - name: Check /etc/ufw/applications.d/*
-      block:
-
-        - name: Cat and register the contents of all the files in /etc/ufw/applications.d
-          ansible.builtin.shell: cat /etc/ufw/applications.d/*
-          args:
-            executable: "{{ ansible_local.bash.path }}"
-          check_mode: false
-          changed_when: false
-          register: ufw_apps_available_d
-
-        - name: Set a fact for the UFW applications available
-          ansible.builtin.set_fact:
-            ufw_apps_available: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') }}"
-
-        - name: Debug the UFW applications available
-          ansible.builtin.debug:
-            var: ufw_apps_available
-            verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
-
-      when:
-        - ufw_apps_d_path is defined
-        - ufw_apps_d_path.stat.exists | bool
+    - name: Include the /etc/ufw/applications.d/* checks
+      ansible.builtin.include_tasks: check_apps.yml
 
     - name: Check that all named allow rules are present
       ansible.builtin.assert:

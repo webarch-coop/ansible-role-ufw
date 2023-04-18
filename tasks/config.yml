@@ -1,0 +1,69 @@
+# Copyright 2020-2023 Luke Murphy and Chris Croome
+#
+# This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+- name: UFW config tasks
+  block:
+
+    - name: Check the existance of the configuration file
+      ansible.builtin.stat:
+        path: "{{ ufw_conf.path }}"
+      register: ufw_conf_path
+
+    - name: Read the contents of the configuration file
+      block:
+
+        - name: Slurp the contents of the configuration file
+          ansible.builtin.slurp:
+            src: "{{ ufw_conf.path }}"
+          register: ufw_conf_file_b64encoded
+
+        - name: Decode the base64 encoded version of the file and set a variable
+          ansible.builtin.set_fact:
+            ufw_conf_file_contents_dict: "{{ ufw_conf_file_b64encoded['content'] | b64decode | string | community.general.jc('ini') }}"
+            ufw_conf_file_contents: "{{ ufw_conf_file_b64encoded['content'] | b64decode | string | community.general.jc('ini') | dict2items }}"
+
+        - name: Debug the existing configuration
+          ansible.builtin.debug:
+            var: ufw_conf_file_contents_dict
+            verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+
+      when: ufw_conf_path.stat.exists | bool
+
+    - name: Debug the proposed configuration
+      ansible.builtin.debug:
+        var: ufw_conf.conf
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+
+    - name: Loop through the configuration
+      community.general.ini_file:
+        path: "{{ ufw_conf.path }}"
+        create: true
+        mode: "0644"
+        owner: root
+        group: root
+        no_extra_spaces: true
+        section: null
+        option: "{{ ufw_cfg.key }}"
+        value: "{{ ufw_cfg.value }}"
+      loop: "{{ ufw_conf.conf | dict2items }}"
+      loop_control:
+        loop_var: ufw_cfg
+        label: "{{ ufw_cfg.key }}"
+      notify:
+        - Disable ufw
+        - Enable ufw
+        - Restart ufw
+      when: >-
+        ( not ufw_conf_path.stat.exists | bool ) or
+        ( ufw_cfg not in ufw_conf_file_contents )
+
+  tags:
+    - ufw
+...

@@ -20,7 +20,6 @@
       notify: Restart ufw
       when:
         - ufw_rule.app is defined
-        - ufw_rule.app | length > 0
         - ufw_rule.port is not defined
         - ufw_rule.proto is not defined
 
@@ -35,9 +34,7 @@
       when:
         - ufw_rule.app is not defined
         - ufw_rule.port is defined
-        - ufw_rule.port | length > 0
         - ufw_rule.proto is defined
-        - ufw_rule.proto | length > 0
 
   tags:
     - ufw
