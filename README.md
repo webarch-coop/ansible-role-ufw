@@ -47,14 +47,20 @@ A string, the name of the app, it must match one of those listed using `ufw app 
 
 An optional comment that is shown at the end of the rule line, this is appended after `Ansible rule`, for example:
 
+```yml
+ufw_allow_rules:
+  - port: 64896
+    proto: udp
+    comment: foo
+```
+
 ```bash
 ufw status
 Status: active
 
 To                         Action      From
 --                         ------      ----
-OpenSSH                    ALLOW       Anywhere                   # Ansible rule
-WWW Full                   ALLOW       Anywhere                   # Ansible rule
+64896/udp                  ALLOW       Anywhere                   # Ansible rule foo
 ```
 
 #### from_ip

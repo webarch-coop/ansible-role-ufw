@@ -48,11 +48,12 @@
         - ufw_apps_available_names is defined
         - ufw_apps_available_names != []
 
-    - name: Loop through the allow rules to check that ther have either app or ports specified
+    - name: Loop through the allow rules to check that they have either app or ports and proto specified
       ansible.builtin.assert:
         that:
-          - ( ufw_rule.app is defined ) or ( ufw_rule.port is defined )
+          - ( ufw_rule.app is defined ) or ( ( ufw_rule.port is defined ) and ( ufw_rule.proto is defined ) )
         quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
+        fail_msg: "Either app or port and protocol need to be defined"
       loop: "{{ ufw_allow_rules }}"
       loop_control:
         loop_var: ufw_rule
@@ -60,11 +61,12 @@
         - ufw_allow_rules is defined
         - ufw_allow_rules != []
 
-    - name: Loop through the deny rules to check that ther have either app or ports specified
+    - name: Loop through the deny rules to check that ther have either app or ports and proto specified
       ansible.builtin.assert:
         that:
-          - ( ufw_rule.app is defined ) or ( ufw_rule.port is defined )
+          - ( ufw_rule.app is defined ) or ( ( ufw_rule.port is defined ) and ( ufw_rule.proto is defined ) )
         quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
+        fail_msg: "Either app or port and protocol need to be defined"
       loop: "{{ ufw_deny_rules }}"
       loop_control:
         loop_var: ufw_rule
