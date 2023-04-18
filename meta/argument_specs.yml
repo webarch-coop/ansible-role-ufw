@@ -27,17 +27,21 @@ argument_specs:
             type: str
             required: false
             description: A UFW application.
+          comment:
+            type: str
+            required: false
+            description: A UFW application comment.
           from_ip:
             type: str
             required: false
             description: IP address(s) that the connection is allowed from.
           port:
             type: str
-            required: true
+            required: false
             description: The port, or range of ports to open.
           proto:
             type: str
-            required: true
+            required: false
             description: The protocol for the rule.
             choices:
               - ah
@@ -80,7 +84,7 @@ argument_specs:
             description: An optional comment to add to UFW application file.
           desc:
             type: str
-            required: true
+            required: false
             description: The UFW application description.
           path:
             type: str
@@ -90,6 +94,10 @@ argument_specs:
             type: str
             required: true
             description: The UFW application ports.
+          title:
+            type: str
+            required: false
+            description: The UFW application title.
       ufw_config:
         type: list
         elements: dict

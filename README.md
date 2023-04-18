@@ -2,7 +2,7 @@
 
 [![pipeline status](https://git.coop/webarch/ufw/badges/master/pipeline.svg)](https://git.coop/webarch/ufw/-/commits/master)
 
-An Ansible role to configure the Ubuntu [UFW - Uncomplicated Firewall](https://manpages.debian.org/ufw/ufw.8.en.html).
+An Ansible role to configure the Ubuntu [UFW - Uncomplicated Firewall](https://manpages.debian.org/ufw/ufw.8.en.html) on Debian and Ubuntu.
 
 ## Usage
 
@@ -19,13 +19,93 @@ ufw_config:
       IPV6: "no"
 ```
 
-## Configuration
+## Role Variables
+
+See the [defaults/main.yml](defaults/main.yml) file for the default variables, the [vars/main.yml](vars/main.yml) file for the preset variables and the [meta/argument_specs.yml](meta/argument_specs.yml) file for the variable specification.
+
+### ufw
+
+A boolean, when `ufw` is `true` the tasks in this role will be run.
+
+### ufw_allow_rules
+
+A list of UFW allow rules, each item in the list must either have a `app` or `post` variable, additional optional variables are `from_ip` and `proto`, for example:
+
+```yml
+ufw_allow_rules:
+  - app: WWW Full
+  - port: 2222
+    proto: tcp
+    comment: SSH
+```
+
+#### app
+
+A string, the name of the app, it must match one of those listed using `ufw app list`.
+
+#### comment
+
+An optional comment that is shown at the end of the rule line, this is appended after `Ansible rule`, for example:
+
+```bash
+ufw status
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere                   # Ansible rule
+WWW Full                   ALLOW       Anywhere                   # Ansible rule
+```
+
+#### from_ip
+
+An optional string to use with the `from_ip` parameter of the [community.general.ufw module](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html#parameter-from_ip).
+
+### ufw_apps
+
+An optional list of UFW application profiles to create or edit in the `/etc/ufw/applications.d/` directory, each item in the list requires a `app`for the application name, title and file name if `path` is not specified, a `desc` for the applicatiion description and a `ports` string. Optional variables are `path` and `comment`, see the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
+
+#### app
+
+A required string, the application name, which is also used as the application title when a `title` is not prtovided.
+
+#### comment
+
+A string, an optional comment to add to the top of the application file.
+
+#### desc
+
+A string, an optional application description, the title is used if a description is not provided and if neither is provide the application name is used.
+
+#### path
+
+A string, an optional full path to the application file, if one is not provided then the application name, lower cased and special characters removed. is used as the filename.
+
+#### ports
+
+A string, a `|`-separated list of ports/protocols where the protocol is optional. A comma-separated list or a range (specified with 'start:end') may also be used to specify multiple ports, in which case the protocol is required, see the examples in the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
+
+#### title
+
+A string, an optional application title, the application name is used if a title is not provided.
+
+### ufw_config
+
+### ufw_disallow_rules
+
+### ufw_default_policy_deny
+
+### ufw_pkgs
+
+### ufw_verify
+
+## Configuration Files
 
 UFW configuration files that use the INI format can be created, deleted and updated using this role see the [ufw-framework](https://manpages.debian.org/ufw/ufw-framework.8.en.html) man page.
 
 ### /etc/default/ufw
 
-The `/etc/default/ufw` high level configuration files can be configured using an item in the `ufw_config` list, the existing config can be read as YAML using:
+The `/etc/default/ufw` high level configuration file can be configured using an item in the `ufw_config` list, the existing config can be read as YAML using:
 
 ```bash
 cat /etc/default/ufw | jc --ini -yp
@@ -77,7 +157,7 @@ LOGLEVEL: low
 
 ### /etc/ufw/applications.d/*
 
-UFW [application integration](https://manpages.debian.org/bullseye/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) profiles in the `/etc/ufw/applications.d/*` directory can be configured using the `ufw_apps` list, the existing config can be read as YAML using:
+UFW [application integration profiles](https://manpages.debian.org/bullseye/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) in the `/etc/ufw/applications.d/*` directory can be configured using the `ufw_apps` list, the existing config can be read as YAML using:
 
 ```bash
 cat /etc/ufw/applications.d/* | jc --ini -yp
@@ -98,60 +178,6 @@ OpenSSH:
   description: OpenSSH is a free implementation of the Secure Shell protocol.
   ports: 22/tcp
 ```
-
-## Role Variables
-
-See the [defaults/main.yml](defaults/main.yml) file for the default variables, the [vars/main.yml](vars/main.yml) file for the preset variables and the [meta/argument_specs.yml](meta/argument_specs.yml) file for the variable specification.
-
-### ufw
-
-A boolean, when `ufw` is `true` the tasks in this role will be run.
-
-### ufw_allow_rules
-
-A list of UFW allow rules, each item in the list must either have a `app` or `post` variable, additional optional variables are `from_ip` and `proto`, for example:
-
-```yml
-ufw_allow_rules:
-  - app: WWW Full
-  - port 2222
-    proto: tcp
-    comment: SSH
-```
-
-#### app
-
-A string, the name of the app, it must match one of those listed using `ufw app list`.
-
-##### comment
-
-An optional comment that is shown at the end of the rule line, this is appended after `Ansible rule`, for example:
-
-```bash
-ufw status
-Status: active
-
-To                         Action      From
---                         ------      ----
-OpenSSH                    ALLOW       Anywhere                   # Ansible rule
-WWW Full                   ALLOW       Anywhere                   # Ansible rule
-```
-
-#### from_ip
-
-An optional string to use with the `from_ip` parameter of the [community.general.ufw module](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html#parameter-from_ip).
-
-### ufw_apps
-
-### ufw_config
-
-### ufw_disallow_rules
-
-### ufw_default_policy_deny
-
-### ufw_pkgs
-
-### ufw_verify
 
 ### Notes
 

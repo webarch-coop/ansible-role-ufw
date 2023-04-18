@@ -37,11 +37,12 @@
         no_extra_spaces: true
         section: "{{ ufw_app.app }}"
         option: title
-        value: "{{ ufw_app.app }}"
+        value: "{{ ufw_app.title | default(ufw_app.app) }}"
       register: ufw_app_title
       when: >-
        ( ufw_app_existing_conf == "null" ) or
-       ( ufw_app_existing_conf.title != ufw_app.app )
+       ( ( ufw_app.title is not defined ) and ( ufw_app_existing_conf.title != ufw_app.app ) ) or
+       ( ( ufw_app.title is defined ) and ( ufw_app_existing_conf.title != ufw_app.title ) )
 
     - name: UFW application description configuration present
       community.general.ini_file:
@@ -53,11 +54,13 @@
         no_extra_spaces: true
         section: "{{ ufw_app.app }}"
         option: description
-        value: "{{ ufw_app.desc }}"
+        value: "{{ ufw_app.desc | default(ufw_app.title) | default(ufw_app.app) }}"
       register: ufw_app_description
       when: >-
        ( ufw_app_existing_conf == "null" ) or
-       ( ufw_app_existing_conf.description != ufw_app.desc )
+       ( ( ufw_app.desc is defined ) and ( ufw_app_existing_conf.description != ufw_app.desc ) ) or
+       ( ( ufw_app.desc is not defined ) and ( ufw_app_existing_conf.description != ufw_app.title ) ) or
+       ( ( ufw_app.title is not defined ) and ( ufw_app_existing_conf.description != ufw_app.app ) )
 
     - name: UFW application ports configuration present
       community.general.ini_file:
