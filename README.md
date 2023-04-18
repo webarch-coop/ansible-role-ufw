@@ -29,7 +29,7 @@ A boolean, when `ufw` is `true` the tasks in this role will be run.
 
 ### ufw_allow_rules
 
-A list of UFW allow rules, each item in the list must either have a `app` or `post` variable, additional optional variables are `from_ip` and `proto`, for example:
+A list of UFW allow rules, each item in the list must either have a `app` or `port` variable, additional optional variables are `from_ip` and `proto`, for example:
 
 ```yml
 ufw_allow_rules:
@@ -61,11 +61,14 @@ WWW Full                   ALLOW       Anywhere                   # Ansible rule
 
 An optional string to use with the `from_ip` parameter of the [community.general.ufw module](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html#parameter-from_ip).
 
+#### port
+
+An optional string containing a port number or a range of ports seperated with a colon.
+
 ### ufw_apps
 
 An optional list of UFW application profiles to create or edit in the `/etc/ufw/applications.d/` directory, each item in the list requires a `app`for the application name, title and file name if `path` is not specified, a `desc` for the applicatiion description and a `ports` string. Optional variables are `path` and `comment`, see the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
 
-<div style="margin-left: 2em">
 #### app
 
 A required string, the application name, which is also used as the application title when a `title` is not prtovided.
@@ -89,17 +92,50 @@ A string, a `|`-separated list of ports/protocols where the protocol is optional
 #### title
 
 A string, an optional application title, the application name is used if a title is not provided.
-</div>
 
 ### ufw_config
 
+A optional list of INI configuration files and configurationto update, see the [configuration files](#configuration-files) documentation below, each itm in the list requires a `path` and a `conf` dictionary.
+
+#### path
+
+A string, the full path to the configuration file.
+
+#### conf
+
+A dictionary, variables and values that should be present in the configuration file.
+
 ### ufw_disallow_rules
+
+A optional list of UFW disallow rules, each item in the list must either have a `app` or `port` variable, additional optional variables are `from_ip` and `proto`.
+
+#### app
+
+A string, the name of the app, it must match one of those listed using `ufw app list`.
+
+#### comment
+
+An optional comment that is shown at the end of the rule line.
+
+#### from_ip
+
+An optional string to use with the `from_ip` parameter of the [community.general.ufw module](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html#parameter-from_ip).
+
+#### port
+
+An optional string containing a port number or a range of ports seperated with a colon.
 
 ### ufw_default_policy_deny
 
+A boolean, when try set the default policy to deny connections.
+
 ### ufw_pkgs
 
+A list of packages to install.
+
 ### ufw_verify
+
+A boolean, verify variables that start with `ufw_`.
 
 ## Configuration Files
 

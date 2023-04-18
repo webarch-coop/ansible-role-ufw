@@ -121,15 +121,29 @@ argument_specs:
             type: str
             required: false
             description: A UFW application.
+          comment:
+            type: str
+            required: false
+            description: A UFW application comment.
+          from_ip:
+            type: str
+            required: false
+            description: IP address(s) that the connection is not allowed from.
           port:
             type: str
-            required: true
+            required: false
             description: The port, or range of ports to close.
           proto:
             type: str
-            required: true
+            required: false
             description: The IP protocol.
             choices:
+              - ah
+              - any
+              - esp
+              - gre
+              - igmp
+              - ipv6
               - tcp
               - udp
       ufw_default_policy_deny:
