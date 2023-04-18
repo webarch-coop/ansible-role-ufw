@@ -226,6 +226,20 @@ ufw status numbered
 ufw delete 2
 ```
 
+List rules using `iptables`:
+
+```bash
+iptables -L -n
+```
+
+Dump, edit and restore using `iptables`:
+
+```bash
+iptables-save > /etc/iptables/rules.v4
+vi /etc/iptables/rules.v4
+iptables-restore < /etc/iptables/rules.v4
+```
+
 ## References
 
 * https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
