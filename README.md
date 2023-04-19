@@ -6,7 +6,7 @@ An Ansible role to configure the Ubuntu [UFW - Uncomplicated Firewall](https://m
 
 ## Usage
 
-An example configuration to only allow SSH and web taffic on ports 80 and 443 using IPv4:
+An example configuration to only allow SSH and web taffic on ports 80 and 443 using IPv4 and to deny all other traffic:
 
 ```yml
 ufw: true
@@ -17,6 +17,7 @@ ufw_config:
   - path: /etc/default/ufw
     conf:
       IPV6: "no"
+ufw_default_policy_deny: true
 ```
 
 Note that this role can't currently be used to delete rules, see the [#Notes](notes below) for how to check and delete UFW and other `iptables` rules.
