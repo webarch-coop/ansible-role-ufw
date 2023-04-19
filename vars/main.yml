@@ -12,6 +12,9 @@
 ufwvarnames: "{{ q('varnames', '^ufw_') | sort }}"
 ufwhostvars: "{{ dict(ufwvarnames | list | zip(q('vars', *ufwvarnames))) }}"
 
+ufw_app_allow_rules: "{{ ufw_allow_rules | community.general.json_query('[].app') }}"
+ufw_app_deny_rules: "{{ ufw_deny_rules | community.general.json_query('[].app') }}"
+
 # This variable is populated when the role is run
 # cat /etc/ufw/applications.d/* | jc --ini -yp
 ufw_apps_available: {}
@@ -20,6 +23,11 @@ ufw_apps_available: {}
 # cat /etc/ufw/applications.d/* | jc --ini -p | jq 'keys' | yq -o=json -P
 ufw_apps_available_names: "{{ ufw_apps_available.keys() }}"
 
-ufw_app_allow_rules: "{{ ufw_allow_rules | community.general.json_query('[].app') }}"
-ufw_app_deny_rules: "{{ ufw_deny_rules | community.general.json_query('[].app') }}"
+ufw_apps_enabled: "{{ ufw_status | community.general.json_query('rules[*].to_service') }}"
+ufw_apps_proposed: "{{ ufw_apps | community.general.json_query('[].app') }}"
+ufw_apps_proposed_but_absent: "{{ ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) }}"
+
+# This variables is populated when the role is run
+# ufw status | jc --ufw -yp
+ufw_status: {}
 ...

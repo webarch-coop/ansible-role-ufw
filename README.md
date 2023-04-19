@@ -19,6 +19,8 @@ ufw_config:
       IPV6: "no"
 ```
 
+Note that this role don't have the ability to delete rules, see the [#Notes](notes below) for how to check and delete UFW and other `iptables` rules.
+
 ## Role Variables
 
 See the [defaults/main.yml](defaults/main.yml) file for the default variables, the [vars/main.yml](vars/main.yml) file for the preset variables and the [meta/argument_specs.yml](meta/argument_specs.yml) file for the variable specification.
@@ -73,15 +75,11 @@ An optional string containing a port number or a range of ports seperated with a
 
 ### ufw_apps
 
-An optional list of UFW application profiles to create or edit in the `/etc/ufw/applications.d/` directory, each item in the list requires a `app`for the application name, title and file name if `path` is not specified, a `desc` for the applicatiion description and a `ports` string. Optional variables are `path` and `comment`, see the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
+An optional list of UFW application profiles to create or edit in the `/etc/ufw/applications.d/` directory, each item in the list requires a `app`for the application name, title and file name if `path` is not specified, a `desc` for the applicatiion description and a `ports` string. See the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
 
 #### app
 
 A required string, the application name, which is also used as the application title when a `title` is not prtovided.
-
-#### comment
-
-A string, an optional comment to add to the top of the application file.
 
 #### desc
 
@@ -94,10 +92,6 @@ A string, an optional full path to the application file, if one is not provided 
 #### ports
 
 A string, a `|`-separated list of ports/protocols where the protocol is optional. A comma-separated list or a range (specified with 'start:end') may also be used to specify multiple ports, in which case the protocol is required, see the examples in the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
-
-#### title
-
-A string, an optional application title, the application name is used if a title is not provided.
 
 ### ufw_config
 
@@ -210,8 +204,7 @@ cat /etc/ufw/applications.d/* | jc --ini -yp
 ---
 CUPS:
   title: Common UNIX Printing System server
-  description: CUPS is a printing system with support for IPP, samba, lpd, and other
-    protocols.
+  description: CUPS is a printing system with support for IPP, samba, lpd, and other protocols.
   ports: '631'
 mosh:
   title: Mosh (mobile shell)
@@ -225,11 +218,55 @@ OpenSSH:
 
 ### Notes
 
-Updating UFW directly:
+Update UFW directly, deleting firewall rules:
 
 ```bash
 ufw status numbered
-ufw delete 2
+```
+```
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] OpenSSH                    ALLOW IN    Anywhere                   # Ansible rule
+[ 2] WWW Full                   ALLOW IN    Anywhere                   # Ansible rule
+[ 3] Turnserver                 ALLOW IN    Anywhere                   # Ansible rule
+[ 4] WWW Cache                  ALLOW IN    Anywhere                   # Ansible rule
+[ 5] RabbitMQ                   ALLOW IN    127.0.0.1                  # Ansible rule
+[ 6] Munin                      ALLOW IN    81.95.52.37                # Ansible rule
+[ 7] Icinga                     ALLOW IN    81.95.52.42                # Ansible rule
+[ 8] MariaDB                    ALLOW IN    127.0.0.1                  # Ansible rule
+[ 9] Redis                      ALLOW IN    127.0.0.1                  # Ansible rule
+[10] Nextcloud Notify Push      ALLOW IN    127.0.0.1                  # Ansible rule
+[11] WWW Cache                  ALLOW IN    127.0.0.1                  # Ansible rule
+```
+```bash
+ufw delete 4
+```
+```
+Deleting:
+ allow 'WWW Cache' comment 'Ansible rule'
+Proceed with operation (y|n)? y
+Rule deleted
+```
+```bash
+ufw status numbered
+```
+```
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] OpenSSH                    ALLOW IN    Anywhere                   # Ansible rule
+[ 2] WWW Full                   ALLOW IN    Anywhere                   # Ansible rule
+[ 3] Turnserver                 ALLOW IN    Anywhere                   # Ansible rule
+[ 4] RabbitMQ                   ALLOW IN    127.0.0.1                  # Ansible rule
+[ 5] Munin                      ALLOW IN    81.95.52.37                # Ansible rule
+[ 6] Icinga                     ALLOW IN    81.95.52.42                # Ansible rule
+[ 7] MariaDB                    ALLOW IN    127.0.0.1                  # Ansible rule
+[ 8] Redis                      ALLOW IN    127.0.0.1                  # Ansible rule
+[ 9] Nextcloud Notify Push      ALLOW IN    127.0.0.1                  # Ansible rule
+[10] WWW Cache                  ALLOW IN    127.0.0.1                  # Ansible rule
 ```
 
 List rules using `iptables`:

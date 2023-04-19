@@ -38,8 +38,20 @@
     - name: Include the UFW check tasks
       ansible.builtin.include_tasks: checks.yml
 
-    - name: UFW applications present
-      ansible.builtin.include_tasks: app.yml
+    - name: Debug UFW applications present
+      ansible.builtin.debug:
+        msg:
+          - "UFW proposed app: {{ ufw_app.app }}"
+          - "UFW porposed app desc: {{ ufw_app.desc }}"
+          - "UFW proposed app ports: {{ ufw_app.ports }}"
+          # - "JMESPath description query: {{ ufw_app_desc_jpq }}"
+          # - "JMESPath ports query: {{ ufw_app_ports_jpq }}"
+          - "UWF existing app description: {{ ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) }}"
+          - "UFW existing app ports: {{ ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) }}"
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      vars:
+        ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
+        ufw_app_ports_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].ports"
       loop: "{{ ufw_apps }}"
       loop_control:
         loop_var: ufw_app
@@ -47,6 +59,20 @@
       when:
         - ufw_apps is defined
         - ufw_apps != []
+
+    - name: UFW applications present
+      ansible.builtin.include_tasks: app.yml
+      vars:
+        ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
+        ufw_app_ports_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].ports"
+      loop: "{{ ufw_apps }}"
+      loop_control:
+        loop_var: ufw_app
+        label: "{{ ufw_app.app }}"
+      when:
+        - ufw_apps is defined
+        - ufw_apps != []
+        - ( ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) ) or ( ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) )
 
     - name: Include UFW config tasks
       ansible.builtin.include_tasks: config.yml

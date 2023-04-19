@@ -60,14 +60,6 @@ argument_specs:
         type: list
         required: false
         description: Internal list of named deny rules.
-      ufw_apps_available_names:
-        type: list
-        required: false
-        description: Internal list of UFW application names.
-      ufw_apps_available:
-        type: dict
-        required: false
-        description: Internal dictionary of all applications.
       ufw_apps:
         type: list
         elements: dict
@@ -78,13 +70,9 @@ argument_specs:
             type: str
             required: true
             description: The UFW application name and title.
-          comment:
-            type: str
-            required: false
-            description: An optional comment to add to UFW application file.
           desc:
             type: str
-            required: false
+            required: true
             description: The UFW application description.
           path:
             type: str
@@ -94,10 +82,29 @@ argument_specs:
             type: str
             required: true
             description: The UFW application ports.
-          title:
-            type: str
-            required: false
-            description: The UFW application title.
+      ufw_apps_available_names:
+        type: list
+        required: false
+        description: Internal list of UFW application names.
+      ufw_apps_available:
+        type: dict
+        required: false
+        description: Internal dictionary of all applications.
+      ufw_apps_enabled:
+        type: list
+        elements: str
+        required: false
+        description: Internal list of enabled apps.
+      ufw_apps_proposed:
+        type: list
+        elements: str
+        required: false
+        description: Internal list of proposed apps.
+      ufw_apps_proposed_but_absent:
+        type: list
+        elements: str
+        required: false
+        description: Internal list of proposed apps that haven't yet been created.
       ufw_config:
         type: list
         elements: dict
@@ -155,6 +162,10 @@ argument_specs:
         elements: str
         required: false
         description: Debian / Ubuntu packages to be installed.
+      ufw_status:
+        type: dict
+        required: false
+        description: Internal dictionary generated from ufw status and the JC ufw parser.
       ufw_verify:
         type: bool
         required: false

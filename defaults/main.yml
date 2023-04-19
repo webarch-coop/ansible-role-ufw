@@ -13,15 +13,26 @@ ufw_allow_rules:
   - app: OpenSSH
 ufw_apps:
   - app: Icinga
-    desc: Icinga monitoring
+    desc: Icinga monitoring.
     ports: 5665/tcp
+  - app: MariaDB
+    desc: The open source relational database.
+    ports: 3306/tcp
   - app: Munin
-    desc: Munin monitoring
+    desc: Munin monitoring.
     ports: 4949/tcp
+  - app: Nextcloud Notify Push
+    desc: Client push update notifications for Nextcloud clients.
+    ports: 7867/tcp
+  - app: PostgreSQL
+    desc: PostgreSQL is a powerful, open source object-relational database system.
+    ports: 5432/tcp
   - app: RabbitMQ
     desc: RabbitMQ is the most widely deployed open source message broker.
-    comment: https://www.rabbitmq.com/networking.html#ports
     ports: 4369/tcp|5671:5672/tcp|5551:5552/tcp|6000:6500/tcp|25672/tcp|35672:35682/tcp
+  - app: Redis
+    desc: The open source, in-memory data store.
+    ports: 6379/tcp
 # ufw_config:
 #   - path: /etc/default/ufw
 #     conf:
