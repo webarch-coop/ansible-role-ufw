@@ -98,7 +98,7 @@ ports=3306/tcp
 
 #### app
 
-A required string, the application name, which is also used as the application title when a `title` is not provided.
+A required string, the application name, which is also used as the application title (note that if this role is used to edit existng apps they might have a `title` that doesn't match the `app` name.
 
 #### desc
 
@@ -114,7 +114,23 @@ A string, a `|`-separated list of ports/protocols where the protocol is optional
 
 ### ufw_config
 
-A optional list of INI configuration files and configurationto update, see the [configuration files](#configuration-files) documentation below, each itm in the list requires a `path` and a `conf` dictionary.
+A optional list of INI configuration files and configuration to update, see the [configuration files](#configuration-files) documentation below, each itm in the list requires a `path` and a `conf` dictionary. For example:
+
+```yaml
+ufw_config:
+  - path: /etc/default/ufw
+    conf:
+      IPV6: "no"
+```
+
+Will result in `/etc/default/ufw` containing:
+
+```ini
+# Set to yes to apply rules to support IPv6 (no means only IPv6 on loopback
+# accepted). You will need to 'disable' and then 'enable' the firewall for
+# the changes to take affect.
+IPV6=no
+```
 
 #### path
 
