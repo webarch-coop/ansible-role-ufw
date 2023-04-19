@@ -19,7 +19,7 @@ ufw_config:
       IPV6: "no"
 ```
 
-Note that this role don't have the ability to delete rules, see the [#Notes](notes below) for how to check and delete UFW and other `iptables` rules.
+Note that this role can't currently be used to delete rules, see the [#Notes](notes below) for how to check and delete UFW and other `iptables` rules.
 
 ## Role Variables
 
@@ -75,11 +75,30 @@ An optional string containing a port number or a range of ports seperated with a
 
 ### ufw_apps
 
-An optional list of UFW application profiles to create or edit in the `/etc/ufw/applications.d/` directory, each item in the list requires a `app`for the application name, title and file name if `path` is not specified, a `desc` for the applicatiion description and a `ports` string. See the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
+An optional list of UFW application profiles to create or edit in the `/etc/ufw/applications.d/` directory, each item in the list requires a `app`for the application name, title and file name if `path` is not specified, a `desc` for the applicatiion description and a `ports` string. See the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage and the following example:
+
+```yml
+ufw_apps:
+  - app: MariaDB
+    desc: The open source relational database.
+    ports: 3306/tcp
+```
+
+Will generate a file at `/etc/ufw/applications.d/mariadb` wth the contents:
+
+```ini
+# Ansible managed
+
+[MariaDB]
+title=MariaDB
+description=The open source relational database.
+ports=3306/tcp
+# vim: syntax=dosini
+```
 
 #### app
 
-A required string, the application name, which is also used as the application title when a `title` is not prtovided.
+A required string, the application name, which is also used as the application title when a `title` is not provided.
 
 #### desc
 
