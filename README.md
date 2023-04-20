@@ -20,7 +20,7 @@ ufw_config:
 ufw_default_policy_deny: true
 ```
 
-Note that this role can't currently be used to delete rules, see the [#Notes](notes below) for how to check and delete UFW and other `iptables` rules.
+Note that this role can't currently be used to delete rules, see the [notes below](#notes) for how to check and delete UFW and other `iptables` rules.
 
 ## Role Variables
 
