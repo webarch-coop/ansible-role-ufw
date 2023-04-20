@@ -30,10 +30,19 @@
       ansible.builtin.apt:
         pkg: "{{ ufw_pkgs }}"
         state: present
+      register: ufw_pkgs_present
       when:
         - ufw_pkgs is defined
         - ufw_pkgs != []
         - ufw_pkgs | difference(ansible_local.dpkg.installed) != []
+
+    - name: Re-read Ansible local facts  # noqa: no-handler
+      ansible.builtin.setup:
+        filter: ansible_local
+      when:
+        - ufw_pkgs_present is defined
+        - ufw_pkgs_present.changed is defined
+        - ufw_pkgs_present.changed | bool
 
     - name: Include the UFW check tasks
       ansible.builtin.include_tasks: checks.yml
