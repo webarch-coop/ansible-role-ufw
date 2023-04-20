@@ -25,6 +25,16 @@
         var: ufw_app_allow_rules
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
 
+    - name: Debug deny rules
+      ansible.builtin.debug:
+        var: ufw_app_deny_rules
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+
+    - name: Debug apps available
+      ansible.builtin.debug:
+        var: ufw_apps_available_names
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+
     - name: Debug apps proposed
       ansible.builtin.debug:
         var: ufw_apps_proposed
@@ -35,10 +45,18 @@
         msg: "{{ ufw_apps_proposed_but_absent }}"
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
 
+    - name: Debug rules proposed that either don't have existing or proposed apps
+      ansible.builtin.debug:
+        msg:
+          - "Allow rules:{% for ufw_allow_rule in ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_allow_rule }}{% if not loop.last %},{% endif %}{% endfor %}"
+          - "Deny rules:{% for ufw_deny_rule in ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_deny_rule }}{% if not loop.last %},{% endif %}{% endfor %}"
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+
     - name: Check that all named allow rules are present or proposed
       ansible.builtin.assert:
         that:
-          - ( ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) == [] ) or ( ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_proposed) )
+          - ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) == []
+          - ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) == []
         quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
         fail_msg: "The specified{% for ufw_app_rule in ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_app_rule }}{% endfor %} rule(s) were not found in /etc/ufw/applications.d or the proposed ufw_apps dictionary."
       when:
@@ -53,6 +71,7 @@
       ansible.builtin.assert:
         that:
           - ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) == []
+          - ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) == []
         quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
         fail_msg: "The specified{% for ufw_app_rule in ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_app_rules }}{% endfor %} rule(s) were not found in /etc/ufw/applications.d"
       when:

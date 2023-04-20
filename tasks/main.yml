@@ -93,6 +93,7 @@
         - ufw_default_policy_deny is defined
         - ufw_default_policy_deny | bool
 
+    # TODO: Only include the allow rule tasks if it is not already present
     - name: Include allow tasks
       ansible.builtin.include_tasks: allow.yml
       loop: "{{ ufw_allow_rules }}"
@@ -102,6 +103,7 @@
         - ufw_allow_rules is defined
         - ufw_allow_rules != []
 
+    # TODO: Only include the deny rule tasks if it is not already present
     - name: Include deny tasks
       ansible.builtin.include_tasks: deny.yml
       loop: "{{ ufw_deny_rules }}"
