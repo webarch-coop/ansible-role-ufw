@@ -8,7 +8,7 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-- name: Verify variables startingh with ufw_
+- name: Verify variables starting with ufw_
   block:
 
     - name: Debug the hostvars variable names that start with ufw_
