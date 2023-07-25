@@ -49,7 +49,7 @@
         owner: root
         group: root
         no_extra_spaces: true
-        section: null
+        section: ""
         option: "{{ ufw_cfg.key }}"
         value: "{{ ufw_cfg.value }}"
       loop: "{{ ufw_conf.conf | dict2items }}"
