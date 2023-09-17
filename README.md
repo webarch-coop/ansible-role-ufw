@@ -11,7 +11,7 @@ An example configuration to only allow SSH and web taffic on ports 80 and 443 us
 ```yml
 ufw: true
 ufw_allow_rules:
-  - app: OpenSSH
+  - app: SSH
   - app: WWW Full
 ufw_config:
   - path: /etc/default/ufw
@@ -42,11 +42,11 @@ ufw_allow_rules:
     comment: SSH
 ```
 
-#### app
+#### ufw_allow_rules.app
 
 A string, the name of the app, it must match one of those listed using `ufw app list`.
 
-#### comment
+#### ufw_allow_rules.comment
 
 An optional comment that is shown at the end of the rule line, this is appended after `Ansible rule`, for example:
 
@@ -97,19 +97,19 @@ ports=3306/tcp
 # vim: syntax=dosini
 ```
 
-#### app
+#### ufw_apps.app
 
 A required string, the application name, which is also used as the application title (note that if this role is used to edit existng apps they might have a `title` that doesn't match the `app` name.
 
-#### desc
+#### ufw_apps.desc
 
 A string, an optional application description, the title is used if a description is not provided and if neither is provide the application name is used.
 
-#### path
+#### ufw_apps.path
 
 A string, an optional full path to the application file, if one is not provided then the application name, lower cased and special characters removed. is used as the filename.
 
-#### ports
+#### ufw_apps.ports
 
 A string, a `|`-separated list of ports/protocols where the protocol is optional. A comma-separated list or a range (specified with 'start:end') may also be used to specify multiple ports, in which case the protocol is required, see the examples in the [application integration](https://manpages.debian.org/ufw/ufw.8.en.html#APPLICATION_INTEGRATION) section of the UFW manpage.
 
@@ -133,11 +133,11 @@ Will result in `/etc/default/ufw` containing:
 IPV6=no
 ```
 
-#### path
+#### ufw_config.path
 
 A string, the full path to the configuration file.
 
-#### conf
+#### ufw_config.conf
 
 A dictionary, variables and values that should be present in the configuration file.
 
@@ -145,19 +145,19 @@ A dictionary, variables and values that should be present in the configuration f
 
 A optional list of UFW disallow rules, each item in the list must either have a `app` or `port` variable, additional optional variables are `from_ip` and `proto`.
 
-#### app
+#### ufw_disallow_rules.app
 
 A string, the name of the app, it must match one of those listed using `ufw app list`.
 
-#### comment
+#### ufw_disallow_rules.comment
 
 An optional comment that is shown at the end of the rule line.
 
-#### from_ip
+#### ufw_disallow_rules.from_ip
 
 An optional string to use with the `from_ip` parameter of the [community.general.ufw module](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html#parameter-from_ip).
 
-#### port
+#### ufw_disallow_rules.port
 
 An optional string containing a port number or a range of ports seperated with a colon.
 
@@ -184,6 +184,7 @@ The `/etc/default/ufw` high level configuration file can be configured using an 
 ```bash
 cat /etc/default/ufw | jc --ini -yp
 ```
+
 ```yaml
 ---
 IPV6: yes
@@ -203,6 +204,7 @@ The `/etc/ufw/sysctl.conf` kernel network tunables file can be configured using 
 ```bash
 cat /etc/ufw/sysctl.conf | jc --ini -yp
 ```
+
 ```yaml
 ---
 net/ipv4/conf/all/accept_redirects: '0'
@@ -223,6 +225,7 @@ The `/etc/ufw/ufw.conf` additional high level configuration file can be configur
 ```bash
 cat /etc/ufw/ufw.conf | jc --ini -yp
 ```
+
 ```yaml
 ---
 ENABLED: no
@@ -236,6 +239,7 @@ UFW [application integration profiles](https://manpages.debian.org/bullseye/ufw/
 ```bash
 cat /etc/ufw/applications.d/* | jc --ini -yp
 ```
+
 ```yaml
 ---
 CUPS:
@@ -259,7 +263,8 @@ Update UFW directly, deleting firewall rules:
 ```bash
 ufw status numbered
 ```
-```
+
+```txt
 Status: active
 
      To                         Action      From
@@ -276,19 +281,23 @@ Status: active
 [10] Nextcloud Notify Push      ALLOW IN    127.0.0.1                  # Ansible rule
 [11] WWW Cache                  ALLOW IN    127.0.0.1                  # Ansible rule
 ```
+
 ```bash
 ufw delete 4
 ```
-```
+
+```txt
 Deleting:
  allow 'WWW Cache' comment 'Ansible rule'
 Proceed with operation (y|n)? y
 Rule deleted
 ```
+
 ```bash
 ufw status numbered
 ```
-```
+
+```txt
 Status: active
 
      To                         Action      From
@@ -321,10 +330,10 @@ iptables-restore < /etc/iptables/rules.v4
 
 ## References
 
-* https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
-* https://kellyjonbrazil.github.io/jc/docs/parsers/ufw
-* https://wiki.debian.org/Uncomplicated%20Firewall%20%28ufw%29
-* https://wiki.ubuntu.com/UncomplicatedFirewall
+* [docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
+* [kellyjonbrazil.github.io/jc/docs/parsers/ufw](https://kellyjonbrazil.github.io/jc/docs/parsers/ufw
+* [wiki.debian.org/Uncomplicated%20Firewall%20%28ufw%29](https://wiki.debian.org/Uncomplicated%20Firewall%20%28ufw%29
+* [wiki.ubuntu.com/UncomplicatedFirewall](https://wiki.ubuntu.com/UncomplicatedFirewall
 
 ## Repository
 

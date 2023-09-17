@@ -18,8 +18,14 @@
         quiet: "{% if ansible_verbosity == 0 %}true{% else %}false{% endif %}"
         fail_msg: "Please install ufw and run this role again."
 
+    - name: Stat /etc/ufw/applications.d
+      ansible.builtin.stat:
+        path: /etc/ufw/applications.d
+      register: ufw_applicatons_path
+
     - name: Include the /etc/ufw/applications.d/* checks
       ansible.builtin.include_tasks: check_apps.yml
+      when: ufw_applicatons_path.stat.exists | bool
 
     - name: Debug allow rules
       ansible.builtin.debug:
