@@ -51,6 +51,29 @@
         - ufw_pkgs_present.changed is defined
         - ufw_pkgs_present.changed | bool
 
+    - name: Stat /lib/systemd/system/ufw.service
+      ansible.builtin.stat:
+        path: /lib/systemd/system/ufw.service
+      register: ufw_system_service
+
+    - name: UFW enabled
+      ansible.builtin.service:
+        name: ufw
+        state: started
+      register: ufw_service
+      when: ufw_system_service.stat.exists | bool
+
+    - name: Debug ufw_service
+      ansible.builtin.debug:
+        var: ufw_service
+        verbosity: 2
+
+    - name: Flush handlers  # noqa: no-handler
+      ansible.builtin.meta: flush_handlers
+      when:
+        - ufw_pkgs_present.changed | bool
+        - ufw_system_service.stat.exists | bool
+
     - name: Include the UFW check tasks
       ansible.builtin.include_tasks: checks.yml
 
