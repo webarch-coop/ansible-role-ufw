@@ -11,6 +11,17 @@
 - name: UFW check applications
   block:
 
+    - name: Find files in /etc/ufw/applications.d
+      ansible.builtin.find:
+        paths: /etc/ufw/applications.d
+        recurse: false
+      register: ufw_applications_d
+
+    - name: Debug ufw_applications_d
+      ansible.builtin.debug:
+        var: ufw_applications_d
+        verbosity: 3
+
     - name: Cat and register the contents of all the files in /etc/ufw/applications.d
       ansible.builtin.shell: cat /etc/ufw/applications.d/*
       args:
