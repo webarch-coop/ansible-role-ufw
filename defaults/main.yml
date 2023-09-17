@@ -10,7 +10,7 @@
 ---
 ufw: false
 ufw_allow_rules:
-  - app: OpenSSH
+  - app: SSH
 ufw_apps:
   - app: Elasticsearch
     desc: Elasticsearch is a distributed, multitenant -capable full-text search engine.
