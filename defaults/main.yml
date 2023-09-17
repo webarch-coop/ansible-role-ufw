@@ -12,6 +12,9 @@ ufw: true
 ufw_allow_rules:
   - app: OpenSSH
 ufw_apps:
+  - app: Elasticsearch
+    desc: Elasticsearch is a distributed, multitenant -capable full-text search engine.
+    ports: 9200/tcp
   - app: Icinga
     desc: Icinga monitoring.
     ports: 5665/tcp
