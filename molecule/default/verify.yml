@@ -1,0 +1,46 @@
+# Copyright 2020-2023 Luke Murphy and Chris Croome
+#
+# This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+- name: Verify as root
+  # become: true
+  connection: local
+  # gather_facts: true
+  hosts:
+    - localhost
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+
+    - name: Check that the service is running
+      ansible.builtin.command: "systemctl status {{ lookup('ansible.builtin.env', 'CI_PROJECT_NAME') }}"
+      check_mode: false
+      changed_when: false
+      register: molecule_systemctl_status
+
+    - name: Set a fact for the Active and Loaded output from systemctl
+      ansible.builtin.set_fact:
+        molecule_systemctl_active: "{{ molecule_systemctl_status.stdout_lines | select('regex', '^     Active: ') | map('regex_replace', '^     Active: ') | first }}"
+        molecule_systemctl_loaded: "{{ molecule_systemctl_status.stdout_lines | select('regex', '^     Loaded: ') | map('regex_replace', '^     Loaded: ') | first }}"
+
+    - name: Debug systemctl active status
+      ansible.builtin.debug:
+        var: molecule_systemctl_active
+
+    - name: Debug systemctl loaded status
+      ansible.builtin.debug:
+        var: molecule_systemctl_loaded
+
+    - name: Check that the service is active and loaded
+      ansible.builtin.assert:
+        that:
+          - ( "active (running)" in molecule_systemctl_active )
+          - ( "enabled; preset: enabled" in molecule_systemctl_loaded )
+        quiet: true
+...

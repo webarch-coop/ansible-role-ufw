@@ -8,29 +8,31 @@
 #
 # You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
 ---
-repos:
-  # https://github.com/adrienverge/yamllint/tags
-  - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.32.0
-    hooks:
-      - id: yamllint
-        name: YAML Lint
-  # https://github.com/ansible/ansible-lint/releases
-  - repo: https://github.com/ansible/ansible-lint.git
-    rev: v6.19.0
-    hooks:
-      - id: ansible-lint
-        name: Ansible Lint
-        language: python
-        additional_dependencies:
-          # https://github.com/kellyjonbrazil/jc/releases
-          - jc==1.23.4
-          # https://github.com/jmespath/jmespath.py/tags
-          - jmespath==1.0.1
-  # https://github.com/jackdewinter/pymarkdown/releases
-  - repo: https://github.com/jackdewinter/pymarkdown.git
-    rev: v0.9.13.4
-    hooks:
-      - id: pymarkdown
-        name: Markdown Lint
+- name: Run as root
+  # become: true
+  connection: local
+  # gather_facts: true
+  hosts:
+    - localhost
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+
+    - name: Debug ansible_effective_user_id
+      ansible.builtin.debug:
+        var: ansible_effective_user_id
+
+    - name: Debug ansible_user_id
+      ansible.builtin.debug:
+        var: ansible_user_id
+
+    - name: Debug ansible_user_dir
+      ansible.builtin.debug:
+        var: ansible_user_dir
+
+    - name: Include role as root
+      ansible.builtin.include_role:
+        name: ufw
+      vars:  # noqa var-naming[no-role-prefix]
+        ufw: true
 ...
