@@ -89,7 +89,11 @@ argument_specs:
       ufw_apps_available:
         type: dict
         required: false
-        description: Internal dictionary of all applications.
+        description: Internal dictionary of all applications available.
+      ufw_apps_available_list:
+        type: list
+        required: false
+        description: Internal list of all applications available.
       ufw_apps_enabled:
         type: list
         elements: str

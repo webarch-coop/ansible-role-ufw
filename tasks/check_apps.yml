@@ -22,28 +22,33 @@
         var: ufw_applications_d
         verbosity: 3
 
-    - name: Cat and register the contents of all the files in /etc/ufw/applications.d
-      ansible.builtin.shell: cat /etc/ufw/applications.d/*
-      args:
-        executable: "{{ ansible_local.bash.path }}"
-      check_mode: false
-      changed_when: false
-      register: ufw_apps_available_d
+    - name: Read the contents of all the files in /etc/ufw/applications.d
+      block:
 
-    - name: Set a fact for the UFW applications available
-      ansible.builtin.set_fact:
-        ufw_apps_available: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') }}"
-        ufw_apps_available_list: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') | dict2items }}"
+        - name: Cat and register the contents of all the files in /etc/ufw/applications.d
+          ansible.builtin.shell: cat /etc/ufw/applications.d/*
+          args:
+            executable: "{{ ansible_local.bash.path }}"
+          check_mode: false
+          changed_when: false
+          register: ufw_apps_available_d
 
-    - name: Debug the UFW applications available dictionary
-      ansible.builtin.debug:
-        var: ufw_apps_available
-        verbosity: "{% if ansible_check_mode | bool %}2{% else %}3{% endif %}"
+        - name: Set a fact for the UFW applications available
+          ansible.builtin.set_fact:
+            ufw_apps_available: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') }}"
+            ufw_apps_available_list: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') | dict2items }}"
 
-    - name: Debug the UFW applications available list
-      ansible.builtin.debug:
-        var: ufw_apps_available_list
-        verbosity: "{% if ansible_check_mode | bool %}2{% else %}3{% endif %}"
+        - name: Debug the UFW applications available dictionary
+          ansible.builtin.debug:
+            var: ufw_apps_available
+            verbosity: "{% if ansible_check_mode | bool %}2{% else %}3{% endif %}"
+
+        - name: Debug the UFW applications available list
+          ansible.builtin.debug:
+            var: ufw_apps_available_list
+            verbosity: "{% if ansible_check_mode | bool %}2{% else %}3{% endif %}"
+
+      when: ufw_applications_d.files != []
 
   tags:
     - ufw

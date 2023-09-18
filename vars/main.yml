@@ -15,9 +15,10 @@ ufwhostvars: "{{ dict(ufwvarnames | list | zip(q('vars', *ufwvarnames))) }}"
 ufw_app_allow_rules: "{{ ufw_allow_rules | community.general.json_query('[].app') }}"
 ufw_app_deny_rules: "{{ ufw_deny_rules | community.general.json_query('[].app') }}"
 
-# This variable is populated when the role is run
+# These variables are populated when the role is run and files are found in /etc/ufw/applications.d
 # cat /etc/ufw/applications.d/* | jc --ini -yp
 ufw_apps_available: {}
+ufw_apps_available_list: []
 
 # ufw app list
 # cat /etc/ufw/applications.d/* | jc --ini -p | jq 'keys' | yq -o=json -P
