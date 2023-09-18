@@ -11,7 +11,7 @@ An example configuration to only allow SSH and web taffic on ports 80 and 443 us
 ```yml
 ufw: true
 ufw_allow_rules:
-  - app: SSH
+  - app: OpenSSH
   - app: WWW Full
 ufw_config:
   - path: /etc/default/ufw

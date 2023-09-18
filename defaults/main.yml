@@ -10,7 +10,7 @@
 ---
 ufw: false
 ufw_allow_rules:
-  - app: SSH
+  - app: OpenSSH
 ufw_apps:
   - app: Elasticsearch
     desc: Elasticsearch is a distributed, multitenant -capable full-text search engine.
@@ -36,6 +36,9 @@ ufw_apps:
   - app: Redis
     desc: The open source, in-memory data store.
     ports: 6379/tcp
+  - app: OpenSSH
+    desc: OpenSSH is a free implementation of the Secure Shell protocol.
+    ports: 22/tcp
 # ufw_config:
 #   - path: /etc/default/ufw
 #     conf:

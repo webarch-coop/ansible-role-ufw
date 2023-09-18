@@ -23,6 +23,12 @@
         - ufw_apps_available is defined
         - ufw_apps_available != {}
 
+    - name: Debug UFW existing app configuration
+      ansible.builtin.debug:
+        var: ufw_app_existing_conf
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      when: ufw_app_existing_conf is defined
+
     - name: Set a variable for the app default path
       ansible.builtin.set_fact:
         ufw_app_default_path: "/etc/ufw/applications.d/{{ ufw_app.app | lower | ansible.builtin.regex_replace(' ', '_') | ansible.builtin.regex_search('^[a-z0-9_]{1,24}') }}"
@@ -49,6 +55,7 @@
         value: "{{ ufw_app.app }}"
       register: ufw_app_title
       when: >-
+       ( ufw_app_existing_conf is not defined ) or
        ( ufw_app_existing_conf == "null" ) or
        ( ufw_app_existing_conf == "" ) or
        ( ufw_app_existing_conf.title != ufw_app.app )
@@ -66,6 +73,7 @@
         value: "{{ ufw_app.desc }}"
       register: ufw_app_description
       when: >-
+       ( ufw_app_existing_conf is not defined ) or
        ( ufw_app_existing_conf == "null" ) or
        ( ufw_app_existing_conf == "" ) or
        ( ufw_app_existing_conf.description != ufw_app.desc )
@@ -83,6 +91,7 @@
         value: "{{ ufw_app.ports }}"
       register: ufw_app_ports
       when: >-
+       ( ufw_app_existing_conf is not defined ) or
        ( ufw_app_existing_conf == "null" ) or
        ( ufw_app_existing_conf == "" ) or
        ( ufw_app_existing_conf.ports != ufw_app.ports )
