@@ -21,6 +21,9 @@ ufw_apps:
   - app: MariaDB
     desc: The open source relational database.
     ports: 3306/tcp
+  - app: Mosh
+    desc: Mobile shell that supports roaming and intelligent local echo.
+    ports: "60000:61000/udp"
   - app: Munin
     desc: Munin monitoring.
     ports: 4949/tcp
