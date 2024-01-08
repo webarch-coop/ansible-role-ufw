@@ -330,10 +330,10 @@ iptables-restore < /etc/iptables/rules.v4
 
 ## References
 
-* [docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
-* [kellyjonbrazil.github.io/jc/docs/parsers/ufw](https://kellyjonbrazil.github.io/jc/docs/parsers/ufw
-* [wiki.debian.org/Uncomplicated%20Firewall%20%28ufw%29](https://wiki.debian.org/Uncomplicated%20Firewall%20%28ufw%29
-* [wiki.ubuntu.com/UncomplicatedFirewall](https://wiki.ubuntu.com/UncomplicatedFirewall
+* [docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html)
+* [kellyjonbrazil.github.io/jc/docs/parsers/ufw](https://kellyjonbrazil.github.io/jc/docs/parsers/ufw)
+* [wiki.debian.org/Uncomplicated%20Firewall%20%28ufw%29](https://wiki.debian.org/Uncomplicated%20Firewall%20%28ufw%29)
+* [wiki.ubuntu.com/UncomplicatedFirewall](https://wiki.ubuntu.com/UncomplicatedFirewall)
 
 ## Repository
 
