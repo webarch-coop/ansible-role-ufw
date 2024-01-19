@@ -1,4 +1,4 @@
-# Copyright 2020-2023 Luke Murphy and Chris Croome
+# Copyright 2020-2024 Luke Murphy and Chris Croome
 #
 # This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
 #
@@ -42,6 +42,9 @@ ufw_apps:
   - app: OpenSSH
     desc: OpenSSH is a free implementation of the Secure Shell protocol.
     ports: 22/tcp
+  - app: XMPP
+    desc: Extensible Messaging and Presence Protocol (XMPP) client connection.
+    ports: 5222/tcp
 # ufw_config:
 #   - path: /etc/default/ufw
 #     conf:

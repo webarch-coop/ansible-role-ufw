@@ -1,4 +1,4 @@
-# Copyright 2020-2023 Luke Murphy and Chris Croome
+# Copyright 2020-2024 Luke Murphy and Chris Croome
 #
 # This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
 #
@@ -31,7 +31,7 @@ repos:
         name: Markdown Lint
   # https://github.com/ansible/ansible-lint/releases
   - repo: https://github.com/ansible/ansible-lint.git
-    rev: v6.22.1
+    rev: v6.22.2
     hooks:
       - id: ansible-lint
         name: Ansible Lint
