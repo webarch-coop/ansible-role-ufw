@@ -37,6 +37,7 @@
       ansible.builtin.apt:
         pkg: "{{ ufw_pkgs }}"
         state: present
+        update_cache: true
       register: ufw_pkgs_present
       when:
         - ufw_pkgs is defined
