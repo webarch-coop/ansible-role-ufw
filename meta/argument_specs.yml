@@ -60,6 +60,14 @@ argument_specs:
         type: list
         required: false
         description: Internal list of named deny rules.
+      ufw_applications_d:
+        type: dict
+        required: false
+        description: Internal dictionary for the result of ansible.builtin.find.
+      ufw_applicatons_path:
+        type: dict
+        required: false
+        description: Internal dictionary for the result of ansible.builtin.stat.
       ufw_apps:
         type: list
         elements: dict
@@ -82,6 +90,10 @@ argument_specs:
             type: str
             required: true
             description: The UFW application ports.
+      ufw_apps_available_d:
+        type: dict
+        required: false
+        description: Internal variable for the result of cat'ing the contents of all the files in /etc/ufw/applications.d.
       ufw_apps_available_names:
         type: list
         required: false
@@ -109,6 +121,10 @@ argument_specs:
         elements: str
         required: false
         description: Internal list of proposed apps that haven't yet been created.
+      ufw_check_status:
+        type: dict
+        required: false
+        description: Internal variables for the results of ufw status.
       ufw_config:
         type: list
         elements: dict
@@ -166,10 +182,22 @@ argument_specs:
         elements: str
         required: false
         description: Debian / Ubuntu packages to be installed.
+      ufw_pkgs_present:
+        type: dict
+        required: false
+        description: Internal variable for the results of installing packages.
+      ufw_service:
+        type: dict
+        required: false
+        description: Internal variables for the results from enabling the UFW service.
       ufw_status:
         type: dict
         required: false
         description: Internal dictionary generated from ufw status and the JC ufw parser.
+      ufw_system_service:
+        type: dict
+        required: false
+        description: Internal variable for the results of stat'ing /lib/systemd/system/ufw.service.
       ufw_verify:
         type: bool
         required: false
