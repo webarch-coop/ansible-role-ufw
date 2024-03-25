@@ -35,7 +35,6 @@
         argument_spec: "{{ ufw_combined_argument_spec['argument_specs']['main']['options'] }}"
         provided_arguments: "{{ ufwhostvars }}"
 
-
   when: ufw_verify | bool
   tags:
     - ufw
