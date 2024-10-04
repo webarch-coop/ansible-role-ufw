@@ -29,9 +29,9 @@
         name: apt
         tasks_from: local_facts.yml
       when: >-
-        ( ansible_local.dpkg.arch is not defined ) or
-        ( ansible_local.gpg.version is not defined ) or
-        ( ansible_local.bash.path is not defined )
+        ( ansible_facts.ansible_local.dpkg.arch is not defined ) or
+        ( ansible_facts.ansible_local.gpg.version is not defined ) or
+        ( ansible_facts.ansible_local.bash.path is not defined )
 
     - name: UFW packages present
       ansible.builtin.apt:
@@ -42,7 +42,7 @@
       when:
         - ufw_pkgs is defined
         - ufw_pkgs != []
-        - ufw_pkgs | difference(ansible_local.dpkg.installed) != []
+        - ufw_pkgs | difference(ansible_facts.ansible_local.dpkg.installed) != []
 
     - name: Re-read Ansible local facts  # noqa: no-handler
       ansible.builtin.setup:

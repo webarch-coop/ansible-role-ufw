@@ -28,7 +28,7 @@
         - name: Cat and register the contents of all the files in /etc/ufw/applications.d
           ansible.builtin.shell: cat /etc/ufw/applications.d/*
           args:
-            executable: "{{ ansible_local.bash.path }}"
+            executable: "{{ ansible_facts.ansible_local.bash.path }}"
           check_mode: false
           changed_when: false
           register: ufw_apps_available_d
