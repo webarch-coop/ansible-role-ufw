@@ -49,7 +49,7 @@ ufw_apps:
 #   - path: /etc/default/ufw
 #     conf:
 #       IPV6: "no"
-ufw_disallow_rules: []
+ufw_deny_rules: []
 ufw_default_policy_deny: true
 ufw_pkgs:
   - ufw

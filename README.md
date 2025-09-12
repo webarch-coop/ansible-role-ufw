@@ -141,23 +141,23 @@ A string, the full path to the configuration file.
 
 A dictionary, variables and values that should be present in the configuration file.
 
-### ufw_disallow_rules
+### ufw_deny_rules
 
-A optional list of UFW disallow rules, each item in the list must either have a `app` or `port` variable, additional optional variables are `from_ip` and `proto`.
+A optional list of UFW deny rules, each item in the list must either have a `app` or `port` variable, additional optional variables are `from_ip` and `proto`.
 
-#### ufw_disallow_rules.app
+#### ufw_deny_rules.app
 
 A string, the name of the app, it must match one of those listed using `ufw app list`.
 
-#### ufw_disallow_rules.comment
+#### ufw_deny_rules.comment
 
 An optional comment that is shown at the end of the rule line.
 
-#### ufw_disallow_rules.from_ip
+#### ufw_deny_rules.from_ip
 
 An optional string to use with the `from_ip` parameter of the [community.general.ufw module](https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html#parameter-from_ip).
 
-#### ufw_disallow_rules.port
+#### ufw_deny_rules.port
 
 An optional string containing a port number or a range of ports seperated with a colon.
 

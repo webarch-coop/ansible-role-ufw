@@ -88,10 +88,10 @@ argument_specs:
             type: dict
             required: true
             description: A YAML dictionary of the configuration that should be present in the file after converting it into INI format.
-      ufw_disallow_rules:
+      ufw_deny_rules:
         type: list
         required: false
-        description: A list of UFW disallow rules.
+        description: A list of UFW deny rules.
         options:
           app:
             type: str
