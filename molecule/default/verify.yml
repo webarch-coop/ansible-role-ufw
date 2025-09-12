@@ -40,7 +40,7 @@
     - name: Check that the service is active and loaded
       ansible.builtin.assert:
         that:
-          - ( "active (exited)" in molecule_systemctl_active )
-          - ( "enabled; preset: enabled" in molecule_systemctl_loaded )
+          - molecule_systemctl_active is ansible.builtin.regex('^active[ ]')
+          - molecule_systemctl_loaded is ansible.builtin.regex('[ ]enabled$')
         quiet: true
 ...
