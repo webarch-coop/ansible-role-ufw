@@ -41,6 +41,6 @@
       ansible.builtin.assert:
         that:
           - molecule_systemctl_active is ansible.builtin.regex('^active[ ]')
-          - molecule_systemctl_loaded is ansible.builtin.regex('[ ]enabled[;][ ]preset[:][ ]enabled[)]$')
+          - molecule_systemctl_loaded is ansible.builtin.regex('[ ]enabled[;][ ][preset|vendor][:][ ]enabled[)]$')
         quiet: true
 ...
