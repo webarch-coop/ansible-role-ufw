@@ -18,10 +18,34 @@ argument_specs:
         type: list
         required: false
         description: Internal list of named allow rules.
+      ufw_app_default_path:
+        type: str
+        required: false
+        description: Internal string for the default app path.
       ufw_app_deny_rules:
         type: list
         required: false
         description: Internal list of named deny rules.
+      ufw_app_description:
+        type: dict
+        required: false
+        description: Internal dictionary for the result from editing the UFW application description configuration.
+      ufw_app_existing_conf:
+        type: dict
+        required: false
+        description: Internal dictionary for UFW existing app configuration.
+      ufw_app_path:
+        type: dict
+        required: false
+        description: Internal dictionary for the result from running stat on the UFW application file.
+      ufw_app_title:
+        type: dict
+        required: false
+        description: Internal dictionary for the result from editing the UFW application title configuration.
+      ufw_app_ports:
+        type: dict
+        required: false
+        description: Internal dictionary for the result from editing the UFW application ports configuration.
       ufw_applications_d:
         type: dict
         required: false
