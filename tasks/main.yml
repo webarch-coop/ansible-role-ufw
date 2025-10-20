@@ -68,6 +68,8 @@
       ansible.builtin.debug:
         var: ufw_service
         verbosity: 2
+      tags:
+        - debug
 
     - name: Flush handlers  # noqa: no-handler
       ansible.builtin.meta: flush_handlers
@@ -100,6 +102,8 @@
       when:
         - ufw_apps is defined
         - ufw_apps != []
+      tags:
+        - debug
 
     - name: UFW applications present
       ansible.builtin.include_tasks: app.yml

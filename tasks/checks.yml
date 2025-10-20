@@ -31,26 +31,36 @@
       ansible.builtin.debug:
         var: ufw_app_allow_rules
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
     - name: Debug deny rules
       ansible.builtin.debug:
         var: ufw_app_deny_rules
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
     - name: Debug apps available
       ansible.builtin.debug:
         var: ufw_apps_available_names
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
     - name: Debug apps proposed
       ansible.builtin.debug:
         var: ufw_apps_proposed
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
     - name: Debug apps proposed but absent
       ansible.builtin.debug:
         msg: "{{ ufw_apps_proposed_but_absent }}"
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
     - name: Debug rules proposed compared with apps existing and proposed
       ansible.builtin.debug:
@@ -60,6 +70,8 @@
           - "Deny rules not available:{% for ufw_deny_rule in ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_deny_rule }}{% if not loop.last %},{% endif %}{% endfor %}"
           - "Deny rules not available and not proposed:{% for ufw_deny_rule in ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_deny_rule }}{% if not loop.last %},{% endif %}{% endfor %}"
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
 
     - name: Check that all named allow rules have apps which are present or proposed
       ansible.builtin.assert:
@@ -135,6 +147,8 @@
       ansible.builtin.debug:
         var: ufw_status
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
 
   when: ufw | bool
   tags:

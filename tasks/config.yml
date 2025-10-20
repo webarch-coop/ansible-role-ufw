@@ -33,6 +33,8 @@
           ansible.builtin.debug:
             var: ufw_conf_file_contents_dict
             verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+          tags:
+            - debug
 
       when: ufw_conf_path.stat.exists | bool
 
@@ -40,6 +42,8 @@
       ansible.builtin.debug:
         var: ufw_conf.conf
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
 
     - name: Loop through the configuration
       community.general.ini_file:

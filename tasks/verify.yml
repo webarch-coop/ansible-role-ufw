@@ -15,11 +15,15 @@
       ansible.builtin.debug:
         var: ufwvarnames
         verbosity: "{% if ansible_check_mode | bool %}3{% else %}4{% endif %}"
+      tags:
+        - debug
 
     - name: Debug the hostvars variable names that start with ufw_
       ansible.builtin.debug:
         var: ufwhostvars
         verbosity: "{% if ansible_check_mode | bool %}3{% else %}4{% endif %}"
+      tags:
+        - debug
 
     - name: Set a fact for the argument spec and internal argument spec
       ansible.builtin.set_fact:

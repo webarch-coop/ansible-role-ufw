@@ -21,6 +21,8 @@
       ansible.builtin.debug:
         var: ufw_applications_d
         verbosity: 3
+      tags:
+        - debug
 
     - name: Read the contents of all the files in /etc/ufw/applications.d
       block:
@@ -42,11 +44,15 @@
           ansible.builtin.debug:
             var: ufw_apps_available
             verbosity: "{% if ansible_check_mode | bool %}2{% else %}3{% endif %}"
+          tags:
+            - debug
 
         - name: Debug the UFW applications available list
           ansible.builtin.debug:
             var: ufw_apps_available_list
             verbosity: "{% if ansible_check_mode | bool %}2{% else %}3{% endif %}"
+          tags:
+            - deBUG
 
       when: ufw_applications_d.files != []
 
