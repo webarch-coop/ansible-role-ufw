@@ -30,9 +30,16 @@
       ansible.builtin.debug:
         var: ansible_facts.user_dir
 
-    - name: Include role as root
+    - name: Include UFW role
       ansible.builtin.include_role:
         name: ufw
+      vars:  # noqa var-naming[no-role-prefix]
+        ufw: true
+
+    - name: Include varify tasks from UFW role
+      ansible.builtin.include_role:
+        name: ufw
+        tasks_from: verify.yml
       vars:  # noqa var-naming[no-role-prefix]
         ufw: true
 ...
