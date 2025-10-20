@@ -36,7 +36,7 @@
       vars:  # noqa var-naming[no-role-prefix]
         ufw: true
 
-    - name: Include varify tasks from UFW role
+    - name: Include verify argument spec tasks from UFW role
       ansible.builtin.include_role:
         name: ufw
         tasks_from: verify.yml
