@@ -101,8 +101,6 @@
         - ufw_apps is defined
         - ufw_apps != []
 
-    - fail:
-
     - name: UFW applications present
       ansible.builtin.include_tasks: app.yml
       vars:
