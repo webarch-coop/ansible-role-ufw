@@ -88,6 +88,7 @@
           # - "JMESPath ports query: {{ ufw_app_ports_jpq }}"
           - "UWF existing app description: {{ ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) }}"
           - "UFW existing app ports: {{ ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) }}"
+          - "UFW ufw_app: {{ ufw_app | ansible.builtin.to_nice_yaml }}"
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
       vars:
         ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
@@ -99,6 +100,8 @@
       when:
         - ufw_apps is defined
         - ufw_apps != []
+
+    - fail:
 
     - name: UFW applications present
       ansible.builtin.include_tasks: app.yml

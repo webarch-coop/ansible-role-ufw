@@ -14,6 +14,23 @@ argument_specs:
     description: An Ansible to configure the Ubuntu UFW - Uncomplicated Firewall.
     short_description: The main entry point for the UFW role.
     options:
+      ufw_app:
+        type: dict
+        required: false
+        description: Internal dictionary for the configuration of a UFW app.
+        options:
+          app:
+            type: str
+            required: true
+            description: The name of the UFW app.
+          desc:
+            type: str
+            required: false
+            description: The description of the UFW app.
+          ports:
+            type: str
+            required: true
+            description: Pipe seperate list of port number and protocols for the UFW app.
       ufw_app_allow_rules:
         type: list
         required: false
