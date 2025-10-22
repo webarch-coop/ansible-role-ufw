@@ -25,7 +25,7 @@
         - ufw_rule.app is defined
         - ufw_rule.port is not defined
         - ufw_rule.proto is not defined
-        - ufw_rule.app not in ufw_apps_proposed_but_absent
+        # - ufw_rule.app not in ufw_apps_proposed_but_absent
 
     - name: "Port allow {{ ufw_rule_desc }}"
       community.general.ufw:
@@ -42,7 +42,7 @@
         - ufw_rule.app is not defined
         - ufw_rule.port is defined
         - ufw_rule.proto is defined
-        - ufw_rule.app not in ufw_apps_proposed_but_absent
+        # - ufw_rule.app not in ufw_apps_proposed_but_absent
 
   tags:
     - ufw

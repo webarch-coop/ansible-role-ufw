@@ -30,6 +30,9 @@ ufw_apps:
   - app: Nextcloud Notify Push
     desc: Client push update notifications for Nextcloud clients.
     ports: 7867/tcp
+  - app: OpenSSH
+    desc: OpenSSH is a free implementation of the Secure Shell protocol.
+    ports: 22/tcp
   - app: PostgreSQL
     desc: PostgreSQL is a powerful, open source object-relational database system.
     ports: 5432/tcp
@@ -39,9 +42,9 @@ ufw_apps:
   - app: Redis
     desc: The open source, in-memory data store.
     ports: 6379/tcp
-  - app: OpenSSH
-    desc: OpenSSH is a free implementation of the Secure Shell protocol.
-    ports: 22/tcp
+  - app: Turnserver
+    desc: Free open source implementation of TURN and STUN Server
+    ports: 3478,3479,5349,5350,49152:65535/tcp|3478,3479,5349,5350,49152:65535/udp
 #   - app: XMPP
 #     desc: Extensible Messaging and Presence Protocol (XMPP) client connection.
 #     ports: 5222/tcp

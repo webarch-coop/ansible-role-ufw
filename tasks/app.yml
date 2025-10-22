@@ -44,7 +44,10 @@
         delete: true
       vars:
         ufw_app_rule_default_jpq: "rules[?to_service=='{{ ufw_app.app }}'].action|[0]"
-      when: ufw_app.app in ufw_apps_enabled
+      when:
+        - ufw_apps_enabled is defined
+        - ufw_apps_enabled != []
+        - ufw_app.app in ufw_apps_enabled
 
     - name: UFW application title configuration present
       community.general.ini_file:
@@ -58,11 +61,11 @@
         option: title
         value: "{{ ufw_app.app }}"
       register: ufw_app_title
-      when: >-
-       (ufw_app_existing_conf is not defined) or
-       (ufw_app_existing_conf == "null") or
-       (ufw_app_existing_conf == "") or
-       ((ufw_app_existing_conf.title is defined) and (ufw_app_existing_conf.title != ufw_app.app))
+      # when: >-
+      #  (ufw_app_existing_conf is not defined) or
+      #  (ufw_app_existing_conf == "null") or
+      #  (ufw_app_existing_conf == "") or
+      #  ((ufw_app_existing_conf.title is defined) and (ufw_app_existing_conf.title != ufw_app.app))
 
     - name: UFW application description configuration present
       community.general.ini_file:
@@ -76,11 +79,11 @@
         option: description
         value: "{{ ufw_app.desc }}"
       register: ufw_app_description
-      when: >-
-       (ufw_app_existing_conf is not defined) or
-       (ufw_app_existing_conf == "null") or
-       (ufw_app_existing_conf == "") or
-       ((ufw_app_existing_conf.description is defined) and (ufw_app_existing_conf.description != ufw_app.desc))
+      # when: >-
+      #  (ufw_app_existing_conf is not defined) or
+      #  (ufw_app_existing_conf == "null") or
+      #  (ufw_app_existing_conf == "") or
+      #  ((ufw_app_existing_conf.description is defined) and (ufw_app_existing_conf.description != ufw_app.desc))
 
     - name: UFW application ports configuration present
       community.general.ini_file:
@@ -94,11 +97,11 @@
         option: ports
         value: "{{ ufw_app.ports }}"
       register: ufw_app_ports
-      when: >-
-       (ufw_app_existing_conf is not defined) or
-       (ufw_app_existing_conf == "null") or
-       (ufw_app_existing_conf == "") or
-       ((ufw_app_existing_conf.ports is defined) and (ufw_app_existing_conf.ports != ufw_app.ports))
+      # when: >-
+      #  (ufw_app_existing_conf is not defined) or
+      #  (ufw_app_existing_conf == "null") or
+      #  (ufw_app_existing_conf == "") or
+      #  ((ufw_app_existing_conf.ports is defined) and (ufw_app_existing_conf.ports != ufw_app.ports))
 
     - name: Check if the UFW application file exists
       ansible.builtin.stat:
@@ -140,10 +143,10 @@
         - name: Include the /etc/ufw/applications.d/* checks
           ansible.builtin.include_tasks: check_apps.yml
 
-      when: >-
-        ((ufw_app_title.changed is defined) and (ufw_app_title.changed | bool)) or
-        ((ufw_app_description.changed is defined) and (ufw_app_description.changed | bool)) or
-        ((ufw_app_ports.changed is defined) and (ufw_app_ports.changed | bool))
+      # when: >-
+      #   ((ufw_app_title.changed is defined) and (ufw_app_title.changed | bool)) or
+      #   ((ufw_app_description.changed is defined) and (ufw_app_description.changed | bool)) or
+      #   ((ufw_app_ports.changed is defined) and (ufw_app_ports.changed | bool))
 
   tags:
     - ufw
