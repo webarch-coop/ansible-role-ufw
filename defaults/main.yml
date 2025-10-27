@@ -10,42 +10,52 @@
 ---
 ufw: false
 ufw_allow_rules:
-  # - app: OpenSSH
   - app: SSH
 ufw_apps:
   - app: Elasticsearch
     desc: Elasticsearch is a distributed, multitenant -capable full-text search engine.
     ports: 9200/tcp
+    state: present
   - app: Icinga
     desc: Icinga monitoring.
     ports: 5665/tcp
+    state: present
   - app: MariaDB
     desc: The open source relational database.
     ports: 3306/tcp
+    state: present
   - app: Mosh
     desc: Mobile shell that supports roaming and intelligent local echo.
     ports: "60000:61000/udp"
+    state: present
   - app: Munin
     desc: Munin monitoring.
     ports: 4949/tcp
+    state: present
   - app: Nextcloud Notify Push
     desc: Client push update notifications for Nextcloud clients.
     ports: 7867/tcp
-  # - app: OpenSSH
-  #   desc: OpenSSH is a free implementation of the Secure Shell protocol.
-  #   ports: 22/tcp
+    state: present
   - app: PostgreSQL
     desc: PostgreSQL is a powerful, open source object-relational database system.
     ports: 5432/tcp
+    state: present
   - app: RabbitMQ
     desc: RabbitMQ is the most widely deployed open source message broker.
     ports: 4369/tcp|5671:5672/tcp|5551:5552/tcp|6000:6500/tcp|25672/tcp|35672:35682/tcp
+    state: present
   - app: Redis
     desc: The open source, in-memory data store.
     ports: 6379/tcp
+    state: present
+  - app: SSH
+    desc: OpenSSH.
+    ports: 22/tcp
+    state: present
   - app: Turnserver
     desc: Free open source implementation of TURN and STUN Server
     ports: 3478,3479,5349,5350,49152:65535/tcp|3478,3479,5349,5350,49152:65535/udp
+    state: present
 # ufw_config:
 #   - path: /etc/default/ufw
 #     conf:

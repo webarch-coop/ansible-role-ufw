@@ -74,6 +74,13 @@ argument_specs:
             type: str
             required: true
             description: The UFW application ports.
+          state:
+            type: str
+            required: true
+            description: The UFW application state.
+            choices:
+              - absent
+              - present
       ufw_config:
         type: list
         elements: dict
