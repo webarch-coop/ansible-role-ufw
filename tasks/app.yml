@@ -144,11 +144,6 @@
         - name: Include the /etc/ufw/applications.d/* checks
           ansible.builtin.include_tasks: check_apps.yml
 
-      # when: >-
-      #   ((ufw_app_title.changed is defined) and (ufw_app_title.changed | bool)) or
-      #   ((ufw_app_description.changed is defined) and (ufw_app_description.changed | bool)) or
-      #   ((ufw_app_ports.changed is defined) and (ufw_app_ports.changed | bool))
-
   tags:
     - ufw
 ...
