@@ -33,9 +33,12 @@
       tags:
         - debug
 
-    - name: Set a variable for the app default path
+    - name: Set a variable for the app default path and set ufw_app_title, ufw_app_description and ufw_app_ports to empty dicts
       ansible.builtin.set_fact:
         ufw_app_default_path: "/etc/ufw/applications.d/{{ ufw_app.app | lower | ansible.builtin.regex_replace(' ', '_') | ansible.builtin.regex_search('^[a-z0-9_]{1,24}') }}"
+        ufw_app_description: {}
+        ufw_app_ports: {}
+        ufw_app_title: {}
 
     - name: Delete the app rule before updating the application
       community.general.ufw:
@@ -143,6 +146,11 @@
 
         - name: Include the /etc/ufw/applications.d/* checks
           ansible.builtin.include_tasks: check_apps.yml
+
+      when: >-
+        ((ufw_app_title.changed is defined) and (ufw_app_title.changed | bool)) or
+        ((ufw_app_description.changed is defined) and (ufw_app_description.changed | bool)) or
+        ((ufw_app_ports.changed is defined) and (ufw_app_ports.changed | bool))
 
   tags:
     - ufw
