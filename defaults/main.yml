@@ -10,7 +10,8 @@
 ---
 ufw: false
 ufw_allow_rules:
-  - app: OpenSSH
+  # - app: OpenSSH
+  - app: SSH
 ufw_apps:
   - app: Elasticsearch
     desc: Elasticsearch is a distributed, multitenant -capable full-text search engine.
@@ -30,9 +31,9 @@ ufw_apps:
   - app: Nextcloud Notify Push
     desc: Client push update notifications for Nextcloud clients.
     ports: 7867/tcp
-  - app: OpenSSH Server
-    desc: OpenSSH is a free implementation of the Secure Shell protocol.
-    ports: 22/tcp
+  # - app: OpenSSH
+  #   desc: OpenSSH is a free implementation of the Secure Shell protocol.
+  #   ports: 22/tcp
   - app: PostgreSQL
     desc: PostgreSQL is a powerful, open source object-relational database system.
     ports: 5432/tcp
@@ -45,9 +46,6 @@ ufw_apps:
   - app: Turnserver
     desc: Free open source implementation of TURN and STUN Server
     ports: 3478,3479,5349,5350,49152:65535/tcp|3478,3479,5349,5350,49152:65535/udp
-#   - app: XMPP
-#     desc: Extensible Messaging and Presence Protocol (XMPP) client connection.
-#     ports: 5222/tcp
 # ufw_config:
 #   - path: /etc/default/ufw
 #     conf:
