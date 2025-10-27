@@ -45,6 +45,7 @@
       vars:
         ufw_app_rule_default_jpq: "rules[?to_service=='{{ ufw_app.app }}'].action|[0]"
       when:
+        - ufw_status is defined
         - ufw_apps_enabled is defined
         - ufw_apps_enabled != []
         - ufw_app.app in ufw_apps_enabled

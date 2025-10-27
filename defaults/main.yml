@@ -30,7 +30,7 @@ ufw_apps:
   - app: Nextcloud Notify Push
     desc: Client push update notifications for Nextcloud clients.
     ports: 7867/tcp
-  - app: OpenSSH
+  - app: OpenSSH Server
     desc: OpenSSH is a free implementation of the Secure Shell protocol.
     ports: 22/tcp
   - app: PostgreSQL
