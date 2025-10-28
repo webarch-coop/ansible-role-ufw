@@ -39,6 +39,8 @@
         state: present
         update_cache: true
       register: ufw_pkgs_present
+      tags:
+        - molecule-idempotence-notest
 
     - name: Re-read Ansible local facts  # noqa: no-handler
       ansible.builtin.setup:
@@ -48,10 +50,19 @@
         - ufw_pkgs_present.changed is defined
         - ufw_pkgs_present.changed | bool
 
-    - name: Stat /lib/systemd/system/ufw.service
+    - name: End role as UFW needs to be installed before it can be started and it needs top be started before it can be configured
+      ansible.builtin.meta: end_role
+      when: ufw_pkgs | difference(ansible_facts.ansible_local.dpkg.installed) != []
+
+    - name: "Stat {{ ufw_systemd_service_file }}"
       ansible.builtin.stat:
-        path: /lib/systemd/system/ufw.service
+        path: "{{ ufw_systemd_service_file }}"
       register: ufw_system_service
+
+    - name: The UFW systemd configuration file is missing
+      ansible.builtin.fail:
+        fail_msg: "The {{ ufw_systemd_service_file }} file could not be found."
+      when: not ufw_system_service.stat.exists | bool
 
     - name: Enable the firewall as it needs to be enabled before it can be configured
       community.general.ufw:
@@ -63,12 +74,11 @@
         name: ufw
         state: started
       register: ufw_service
-      when: ufw_system_service.stat.exists | bool
 
     - name: Debug ufw_service
       ansible.builtin.debug:
         var: ufw_service
-        verbosity: 2
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
       tags:
         - debug
 

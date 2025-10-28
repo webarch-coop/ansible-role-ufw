@@ -138,6 +138,10 @@ argument_specs:
         elements: str
         required: false
         description: Debian / Ubuntu packages to be installed.
+      ufw_systemd_service_file:
+        type: str
+        required: true
+        description: Path for the UFW systemd service unit file.
       ufw_verify:
         type: bool
         required: false

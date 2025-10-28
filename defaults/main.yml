@@ -64,5 +64,6 @@ ufw_deny_rules: []
 ufw_default_policy_deny: true
 ufw_pkgs:
   - ufw
+ufw_systemd_service_file: /lib/systemd/system/ufw.service
 ufw_verify: true
 ...
