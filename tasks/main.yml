@@ -103,12 +103,12 @@
     - name: Debug UFW applications present
       ansible.builtin.debug:
         msg:
+          - "JMESPath description query: {{ ufw_app_desc_jpq }}"
+          - "JMESPath ports query: {{ ufw_app_ports_jpq }}"
           - "UFW app: {{ ufw_app.app }}"
           - "UFW app desc: {{ ufw_app.desc }}"
           - "UFW app ports: {{ ufw_app.ports }}"
           - "UFW app state: {{ ufw_app.state }}"
-          # - "JMESPath description query: {{ ufw_app_desc_jpq }}"
-          # - "JMESPath ports query: {{ ufw_app_ports_jpq }}"
           - "UWF existing app description: {{ ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) }}"
           - "UFW existing app ports: {{ ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) }}"
           - "UFW ufw_app: {{ ufw_app | ansible.builtin.to_nice_yaml }}"
@@ -139,6 +139,10 @@
         - ufw_apps is defined
         - ufw_apps != []
         - ufw_app.state == "present"
+        - ( ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) ) or ( ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) )
+
+    - name: Debug fail
+      ansible.builtin.fail:
 
     - name: Include UFW config tasks
       ansible.builtin.include_tasks: config.yml
