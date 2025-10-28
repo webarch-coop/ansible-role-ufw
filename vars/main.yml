@@ -22,6 +22,10 @@ ufw_app_deny_rules: "{{ ufw_deny_rules | community.general.json_query('[].app') 
 ufw_apps_available: {}
 ufw_apps_available_list: []
 
+# This variables is populated when the role is run
+# ufw status | jc --ufw -yp
+ufw_status: {}
+
 # ufw app list
 # cat /etc/ufw/applications.d/* | jc --ini -p | jq 'keys' | yq -o=json -P
 ufw_apps_available_names: "{{ ufw_apps_available.keys() }}"
@@ -29,8 +33,4 @@ ufw_apps_available_names: "{{ ufw_apps_available.keys() }}"
 ufw_apps_enabled: "{{ ufw_status | community.general.json_query('rules[*].to_service') }}"
 ufw_apps_proposed: "{{ ufw_apps | community.general.json_query('[].app') }}"
 ufw_apps_proposed_but_absent: "{{ ufw_apps_proposed | ansible.builtin.difference(ufw_apps_available_names) }}"
-
-# This variables is populated when the role is run
-# ufw status | jc --ufw -yp
-ufw_status: {}
 ...

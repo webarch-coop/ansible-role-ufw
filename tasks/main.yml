@@ -48,15 +48,15 @@
         - ufw_pkgs_present.changed is defined
         - ufw_pkgs_present.changed | bool
 
-    - name: Enable the firewall as it needs to be enabled before it can be configured
-      community.general.ufw:
-        state: enabled
-      notify: Restart ufw
-
     - name: Stat /lib/systemd/system/ufw.service
       ansible.builtin.stat:
         path: /lib/systemd/system/ufw.service
       register: ufw_system_service
+
+    - name: Enable the firewall as it needs to be enabled before it can be configured
+      community.general.ufw:
+        state: enabled
+      notify: Restart ufw
 
     - name: UFW started as it needs to be started before it can be configured
       ansible.builtin.service:

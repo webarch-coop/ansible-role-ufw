@@ -11,16 +11,50 @@
 - name: UFW application file
   block:
 
-    - name: Debug UFW proposed app variables
+    - name: Debug ufw_apps_available
+      ansible.builtin.debug:
+        var: ufw_apps_available
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug ufw_app
       ansible.builtin.debug:
         var: ufw_app
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       tags:
         - debug
 
+    - name: Debug existing app configuration
+      ansible.builtin.debug:
+        msg: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_query) | default(null) }}"
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      vars:
+        ufw_apps_available_query: "{{ ufw_app.app }}"
+      tags:
+        - debug
+
     - name: Set a variable for the existing app configuration
       ansible.builtin.set_fact:
-        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query('ufw_app.app') | default(null) }}"
+        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_query) | default(null) }}"
+      vars:
+        ufw_apps_available_query: "{{ ufw_app.app }}"
+      when:
+        - ufw_apps_available is defined
+        - ufw_apps_available != {}
+
+    - name: Debug UFW existing app configuration
+      ansible.builtin.debug:
+        var: ufw_app_existing_conf
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      when: ufw_app_existing_conf is defined
+      tags:
+        - debug
+
+    - name: Set a variable for the existing app configuration
+      ansible.builtin.set_fact:
+        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_app.app) | default(null) }}"
+
       when:
         - ufw_apps_available is defined
         - ufw_apps_available != {}

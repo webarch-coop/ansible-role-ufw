@@ -62,7 +62,7 @@
       tags:
         - debug
 
-    - name: Debug rules proposed compared with apps existing and proposed
+    - name: Debug rules proposed compared with apps existing and proposed using for loops
       ansible.builtin.debug:
         msg:
           - "Allow rules not available:{% for ufw_allow_rule in ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_allow_rule }}{% if not loop.last %},{% endif %}{% endfor %}"
@@ -70,6 +70,22 @@
           - "Deny rules not available:{% for ufw_deny_rule in ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_deny_rule }}{% if not loop.last %},{% endif %}{% endfor %}"
           - "Deny rules not available and not proposed:{% for ufw_deny_rule in ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) %} {{ ufw_deny_rule }}{% if not loop.last %},{% endif %}{% endfor %}"
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug rules proposed compared with apps existing and proposed
+      ansible.builtin.debug:
+        msg:
+          - "Allow rules not available: {{ ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) | join(', ') }}"
+          - "Allow rules not available and not proposed: {{ ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) | join(', ') }}"
+          - "Deny rules not available: {{ ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) | join(', ') }}"
+          - "Deny rules not available and not proposed: {{ ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) | join(', ') }}"
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      when: >-
+        (ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_available_names) != []) or
+        (ufw_app_allow_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) != []) or
+        (ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_available_names) != []) or
+        (ufw_app_deny_rules | ansible.builtin.difference(ufw_apps_proposed) | ansible.builtin.difference(ufw_apps_available_names) != [])
       tags:
         - debug
 
