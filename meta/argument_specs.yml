@@ -82,7 +82,7 @@ argument_specs:
               - absent
               - present
       ufw_apt_only:
-        type:  bool
+        type: bool
         required: true
         description: End role after install apt packages.
       ufw_config:
