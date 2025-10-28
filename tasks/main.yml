@@ -50,9 +50,9 @@
         - ufw_pkgs_present.changed is defined
         - ufw_pkgs_present.changed | bool
 
-    - name: End role as UFW needs to be installed before it can be started and it needs top be started before it can be configured
+    - name: End role as UFW ufw_apt_only is true
       ansible.builtin.meta: end_role
-      when: ufw_pkgs | difference(ansible_facts.ansible_local.dpkg.installed) != []
+      when: ufw_apt_only | bool
 
     - name: "Stat {{ ufw_systemd_service_file }}"
       ansible.builtin.stat:
@@ -141,8 +141,8 @@
         - ufw_app.state == "present"
         - ( ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) ) or ( ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) )
 
-    - name: Debug fail
-      ansible.builtin.fail:
+    # - name: Debug fail
+    #   ansible.builtin.fail:
 
     - name: Include UFW config tasks
       ansible.builtin.include_tasks: config.yml
