@@ -18,7 +18,7 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
 
-    - name: Check the UFW service when not in check mode
+    - name: Check the UFW service when not in apt package install only or check mode
       block:
 
         - name: Check that the service is running
@@ -47,10 +47,12 @@
               - molecule_systemctl_loaded is ansible.builtin.regex('[ ]enabled[;][ ](vendor[ ])?preset[:][ ]enabled[)]$')
             quiet: true
 
-      when: not ansible_check_mode | bool
+      when:
+        - not ansible_check_mode | bool
+        - not ufw_apt_only | bool
 
-    - name: UFW service check skipped due to check mode
+    - name: UFW service check when in apt package install only or check mode
       ansible.builtin.debug:
         msg: Skipped check that UFW is running.
-      when: ansible_check_mode | bool
+      when: (ansible_check_mode | bool) or (ufw_apt_only | bool)
 ...
