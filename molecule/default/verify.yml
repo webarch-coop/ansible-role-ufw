@@ -18,30 +18,39 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
 
-    - name: Check that the service is running
-      ansible.builtin.command: "systemctl status {{ lookup('ansible.builtin.env', 'CI_PROJECT_NAME') }}"
-      check_mode: false
-      changed_when: false
-      register: molecule_systemctl_status
+    - name: Check the UFW service when not in check mode
+      block:
 
-    - name: Set a fact for the Active and Loaded output from systemctl
-      ansible.builtin.set_fact:
-        molecule_systemctl_active: "{{ molecule_systemctl_status.stdout_lines | select('regex', '^     Active: ') | map('regex_replace', '^     Active: ') | first }}"
-        molecule_systemctl_loaded: "{{ molecule_systemctl_status.stdout_lines | select('regex', '^     Loaded: ') | map('regex_replace', '^     Loaded: ') | first }}"
+        - name: Check that the service is running
+          ansible.builtin.command: "systemctl status {{ lookup('ansible.builtin.env', 'CI_PROJECT_NAME') }}"
+          check_mode: false
+          changed_when: false
+          register: molecule_systemctl_status
 
-    - name: Debug systemctl active status
-      ansible.builtin.debug:
-        var: molecule_systemctl_active
+        - name: Set a fact for the Active and Loaded output from systemctl
+          ansible.builtin.set_fact:
+            molecule_systemctl_active: "{{ molecule_systemctl_status.stdout_lines | select('regex', '^     Active: ') | map('regex_replace', '^     Active: ') | first }}"
+            molecule_systemctl_loaded: "{{ molecule_systemctl_status.stdout_lines | select('regex', '^     Loaded: ') | map('regex_replace', '^     Loaded: ') | first }}"
 
-    - name: Debug systemctl loaded status
-      ansible.builtin.debug:
-        var: molecule_systemctl_loaded
+        - name: Debug systemctl active status
+          ansible.builtin.debug:
+            var: molecule_systemctl_active
 
-    - name: Check that the service is active and loaded
-      ansible.builtin.assert:
-        that:
-          - molecule_systemctl_active is ansible.builtin.regex('^active[ ]')
-          - molecule_systemctl_loaded is ansible.builtin.regex('[ ]enabled[;][ ](vendor[ ])?preset[:][ ]enabled[)]$')
-        quiet: true
+        - name: Debug systemctl loaded status
+          ansible.builtin.debug:
+            var: molecule_systemctl_loaded
+
+        - name: Check that the service is active and loaded
+          ansible.builtin.assert:
+            that:
+              - molecule_systemctl_active is ansible.builtin.regex('^active[ ]')
+              - molecule_systemctl_loaded is ansible.builtin.regex('[ ]enabled[;][ ](vendor[ ])?preset[:][ ]enabled[)]$')
+            quiet: true
+
       when: not ansible_check_mode | bool
+
+    - name: UFW service check skipped due to check mode
+      ansible.builtin.debug:
+        msg: Skipped check that UFW is running.
+      when: ansible_check_mode | bool
 ...
