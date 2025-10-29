@@ -26,8 +26,8 @@
 
         - name: Decode the base64 encoded version of the file and set a variable
           ansible.builtin.set_fact:
-            ufw_conf_file_contents_dict: "{{ ufw_conf_file_b64encoded['content'] | b64decode | string | community.general.jc('ini') }}"
-            ufw_conf_file_contents: "{{ ufw_conf_file_b64encoded['content'] | b64decode | string | community.general.jc('ini') | dict2items }}"
+            ufw_conf_file_contents_dict: "{{ ufw_conf_file_b64encoded['content'] | ansible.builtin.b64decode | string | community.general.jc('ini') }}"
+            ufw_conf_file_contents: "{{ ufw_conf_file_b64encoded['content'] | ansible.builtin.b64decode | string | community.general.jc('ini') | ansible.builtin.dict2items }}"
 
         - name: Debug the existing configuration
           ansible.builtin.debug:
@@ -56,7 +56,7 @@
         section: ""
         option: "{{ ufw_cfg.key }}"
         value: "{{ ufw_cfg.value }}"
-      loop: "{{ ufw_conf.conf | dict2items }}"
+      loop: "{{ ufw_conf.conf | ansible.builtin.dict2items }}"
       loop_control:
         loop_var: ufw_cfg
         label: "{{ ufw_cfg.key }}"

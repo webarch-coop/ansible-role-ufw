@@ -84,10 +84,9 @@
         - ufw_apps is defined
         - ufw_apps != []
         - ufw_app.state == "present"
-        - ( ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) ) or ( ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) )
-
-    # - name: Debug fail
-    #   ansible.builtin.fail:
+        - >-
+          ( ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) ) or
+          ( ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) )
 
     - name: Include UFW config tasks
       ansible.builtin.include_tasks: config.yml
@@ -119,6 +118,7 @@
         - ufw_deny_rules is defined
         - ufw_deny_rules != []
 
+    # TODO: Check existing policy first
     - name: Policy deny
       community.general.ufw:
         policy: deny
