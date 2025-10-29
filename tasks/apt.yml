@@ -61,7 +61,7 @@
     - name: Set a fact for the systemd status
       ansible.builtin.set_fact:
         ufw_system_service_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items }}"
-        ufw_system_service_ufw_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_status_jpq) }}"
+        ufw_system_service_ufw_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_ufw_status_jpq) }}"
       vars:
         ufw_system_service_ufw_status_jpq: "[?key=='{{ ufw_systemd_service_name }}'].value|[0]"
 
