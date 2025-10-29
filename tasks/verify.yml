@@ -34,6 +34,11 @@
       ansible.builtin.set_fact:
         ufw_combined_argument_spec: "{{ ufw_argument_spec | ansible.builtin.combine(ufw_internal_argument_spec, recursive=true) }}"
 
+    - name: Debug ufw_app_existing_conf
+      ansible.builtin.debug:
+        var: ufw_app_existing_conf
+      when: ufw_app_existing_conf is defined
+
     - name: Check ufw_ variables using the combined argument spec
       ansible.builtin.validate_argument_spec:
         argument_spec: "{{ ufw_combined_argument_spec['argument_specs']['main']['options'] }}"

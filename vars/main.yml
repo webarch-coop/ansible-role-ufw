@@ -14,6 +14,8 @@ ansible_managed: "Ansible managed"
 ufwvarnames: "{{ q('varnames', '^ufw_') | sort }}"
 ufwhostvars: "{{ dict(ufwvarnames | list | zip(q('vars', *ufwvarnames))) }}"
 
+ufw_systemd_service_name: "{{ ufw_systemd_service_file | ansible.builtin.basename }}"
+
 ufw_app_allow_rules: "{{ ufw_allow_rules | community.general.json_query('[].app') }}"
 ufw_app_deny_rules: "{{ ufw_deny_rules | community.general.json_query('[].app') }}"
 

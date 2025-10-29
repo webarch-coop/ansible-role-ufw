@@ -146,6 +146,10 @@ argument_specs:
         type: str
         required: true
         description: Path for the UFW systemd service unit file.
+      ufw_systemd_service_name:
+        type: str
+        required: true
+        description: Name of the UFW systemd service unit file devived using the basename filter on the UFW systemd service unit file path.
       ufw_verify:
         type: bool
         required: false
