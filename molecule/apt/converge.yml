@@ -33,9 +33,9 @@
     - name: Include UFW role and only run the apt tasks
       ansible.builtin.include_role:
         name: ufw
+        tasks_from: apt.yml
       vars:  # noqa var-naming[no-role-prefix]
         ufw: true
-        ufw_apt_only: true
 
     - name: Include verify argument spec tasks from UFW role
       ansible.builtin.include_role:

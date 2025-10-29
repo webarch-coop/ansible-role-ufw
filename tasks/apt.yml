@@ -1,0 +1,119 @@
+# Copyright 2020-2025 Luke Murphy and Chris Croome
+#
+# This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# The Webarchitects Uncomplicated Firewall (UFW) Ansible role is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with the Webarchitects Uncomplicated Firewall (UFW) Ansible role. If not, see <https://www.gnu.org/licenses/>.
+---
+- name: Apt tasks to install, enable and start UFW
+  block:
+
+    - name: Include apt role local fact tasks
+      ansible.builtin.include_role:
+        name: apt
+        tasks_from: local_facts.yml
+      when: >-
+        ( ansible_facts.ansible_local.dpkg.arch is not defined ) or
+        ( ansible_facts.ansible_local.gpg.version is not defined ) or
+        ( ansible_facts.ansible_local.bash.path is not defined )
+
+    - name: UFW packages present
+      ansible.builtin.apt:
+        pkg: "{{ ufw_pkgs }}"
+        state: present
+        update_cache: true
+      register: ufw_pkgs_present
+      tags:
+        - molecule-idempotence-notest
+
+    - name: Re-read Ansible local facts  # noqa: no-handler
+      ansible.builtin.setup:
+        filter: ansible_local
+      when:
+        - ufw_pkgs_present is defined
+        - ufw_pkgs_present.changed is defined
+        - ufw_pkgs_present.changed | bool
+
+    - name: "Stat {{ ufw_systemd_service_file }}"
+      ansible.builtin.stat:
+        path: "{{ ufw_systemd_service_file }}"
+      register: ufw_system_service
+
+    - name: The UFW systemd configuration file is missing
+      ansible.builtin.fail:
+        fail_msg: "The {{ ufw_systemd_service_file }} file could not be found."
+      when: not ufw_system_service.stat.exists | bool
+
+    - name: Check the systemd info
+      community.general.systemd_info:
+      register: ufw_system_service_info
+
+    - name: Debug ufw_system_service_info
+      ansible.builtin.debug:
+        var: ufw_system_service_info
+        # verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+    - name: Set a fact for the systemd status
+      ansible.builtin.set_fact:
+        ufw_system_service_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items }}"
+        ufw_system_service_ufw_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_status_jpq) }}"
+      vars:
+        ufw_system_service_ufw_status_jpq: "[?key=='{{ ufw_systemd_service_name }}'].value|[0]"
+
+    - name: Debug ufw_system_service_info
+      ansible.builtin.debug:
+        var: ufw_system_service_status
+        # verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug ufw_system_service_ufw_status
+      ansible.builtin.debug:
+        var: ufw_system_service_ufw_status
+        # verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug
+      ansible.builtin.fail:
+
+    - name: Check the systemd status for UFW
+      community.general.systemd_info:
+        unitname:
+          - "{{ ufw_systemd_service_name }}"
+      register: ufw_system_service_info
+
+    - name: Set a fact for the systemd status for UFW
+      ansible.builtin.set_fact:
+        ufw_system_service_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_status_jpq) }}"
+      vars:
+        ufw_system_service_status_jpq: "[?key=='{{ ufw_systemd_service_name }}'].value|[0]"
+
+    - name: Enable the firewall as it needs to be enabled before it can be configured
+      community.general.ufw:
+        state: enabled
+      when: (ufw_system_service_status.unitfilepreset != "enabled") or (ufw_system_service_status.unitfilestate != "enabled")
+      notify: Restart ufw
+
+    - name: UFW started as it needs to be started before it can be configured
+      ansible.builtin.service:
+        name: ufw
+        state: started
+      register: ufw_service
+
+    - name: Debug ufw_service
+      ansible.builtin.debug:
+        var: ufw_service
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+      tags:
+        - debug
+
+  when: ufw | bool
+  tags:
+    - ufw
+...
