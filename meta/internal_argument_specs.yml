@@ -109,45 +109,57 @@ argument_specs:
       ufw_check_status:
         type: dict
         required: false
-        description: Internal variable for the results of ufw status.
+        description: Internal dictionry for the results of ufw status.
       ufw_combined_argument_spec:
         type: dict
         required: false
-        description: Internal variable for the combined argument spec.
+        description: Internal dictionry for the combined argument spec.
       ufw_conf_file_b64encoded:
         type: dict
         required: false
-        description: Internal variable for the results from slurping the contents of a configuration file.
+        description: Internal dictionry for the results from slurping the contents of a configuration file.
       ufw_conf_file_contents:
         type: list
         required: false
-        description: Internal variable for a list of the configuration file contents.
+        description: Internal list for a list of the configuration file contents.
       ufw_conf_file_contents_dict:
         type: dict
         required: false
-        description: Internal variable for a dictionry of the configuration file contents.
+        description: Internal dictionry for a dictionry of the configuration file contents.
       ufw_conf_path:
         type: dict
         required: false
-        description: Internal variable for a dictionry of the result of stat'ing the configuration file path.
+        description: Internal dictionry for the result of stat'ing the configuration file path.
       ufw_internal_argument_spec:
         type: dict
         required: false
-        description: Internal variable for the internal argument spec.
+        description: Internal dictionary for the internal argument spec.
       ufw_pkgs_present:
         type: dict
         required: false
-        description: Internal variable for the results of installing packages.
+        description: Internal dictionary for the results of installing packages.
       ufw_service:
         type: dict
         required: false
-        description: Internal variables for the results from enabling the UFW service.
+        description: Internal dictionary for the results from enabling the UFW service.
       ufw_status:
         type: dict
         required: false
         description: Internal dictionary generated from ufw status and the JC ufw parser.
+      ufw_system_service_info:
+        type: dict
+        required: false
+        description: Internal dictionary for the results from community.general.systemd_info.
+      ufw_system_service_status:
+        type: dict
+        required: false
+        description: Internal dictionary for the systemd services info.
       ufw_system_service:
         type: dict
         required: false
-        description: Internal variable for the results of stat'ing /lib/systemd/system/ufw.service.
+        description: Internal dictionary for the results of stat'ing /lib/systemd/system/ufw.service.
+      ufw_system_service_ufw_status:
+        type: dict
+        required: false
+        description: Internal dictionary for the UFW systemd status.
 ...
