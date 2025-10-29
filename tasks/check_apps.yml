@@ -38,7 +38,7 @@
         - name: Set a fact for the UFW applications available
           ansible.builtin.set_fact:
             ufw_apps_available: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') }}"
-            ufw_apps_available_list: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') | dict2items }}"
+            ufw_apps_available_list: "{{ ufw_apps_available_d.stdout | string | community.general.jc('ini') | ansible.builtin.dict2items }}"
 
         - name: Debug the UFW applications available dictionary
           ansible.builtin.debug:

@@ -11,9 +11,9 @@
 - name: UFW application file
   block:
 
-    - name: Debug ufw_apps_available
+    - name: Debug ufw_apps_available_list
       ansible.builtin.debug:
-        var: ufw_apps_available
+        var: ufw_apps_available_list
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       tags:
         - debug
@@ -27,18 +27,20 @@
 
     - name: Debug existing app configuration
       ansible.builtin.debug:
-        msg: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) }}"
+        msg: "{{ ufw_apps_available_list | community.general.json_query(ufw_apps_available_jpq) }}"
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       vars:
-        ufw_apps_available_jpq: "'{{ ufw_app.app }}'"
+        ufw_apps_available_jpq: "[?key=='{{ ufw_app.app }}'].value|[0]"
       tags:
         - debug
 
     - name: Set a variable for the existing app configuration
       ansible.builtin.set_fact:
-        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) }}"
+        ufw_app_existing_conf: >-
+          {%- if ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) | ansible.builtin.type_debug != "dict" -%}{}{%- else -%}
+          {{- ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) -}}{%- endif -%}
       vars:
-        ufw_apps_available_jpq: "'{{ ufw_app.app }}'"
+        ufw_apps_available_jpq: "[?key=='{{ ufw_app.app }}'].value|[0]"
       when:
         - ufw_apps_available is defined
         - ufw_apps_available != {}
