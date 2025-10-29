@@ -54,14 +54,16 @@
     - name: Debug ufw_system_service_info
       ansible.builtin.debug:
         var: ufw_system_service_info
-        # verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+        verbosity: "{% if ansible_check_mode | bool %}2{% else %}3{% endif %}"
       tags:
         - debug
 
-    - name: Set a fact for the systemd status
+    - name: Set facts for the systemd status
       ansible.builtin.set_fact:
         ufw_system_service_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items }}"
-        ufw_system_service_ufw_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_ufw_status_jpq) | default('{}') }}"
+        ufw_system_service_ufw_status: >-
+          {%- if ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_ufw_status_jpq) == "null" -%}{}{%- else -%}
+          {{- ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_ufw_status_jpq) -}}{%- endif -%}
       vars:
         ufw_system_service_ufw_status_jpq: "[?key=='{{ ufw_systemd_service_name }}'].value|[0]"
 
@@ -75,7 +77,7 @@
     - name: Debug ufw_system_service_ufw_status
       ansible.builtin.debug:
         var: ufw_system_service_ufw_status
-        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       tags:
         - debug
 
