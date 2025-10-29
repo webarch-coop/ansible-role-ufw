@@ -86,7 +86,7 @@
         state: enabled
       when: >-
         (ufw_system_service_ufw_status == {}) or
-        ((ufw_system_service_ufw_status.unitfilepreset is defined) and (unitfilepreset.unitfilepreset != "enabled")) or
+        ((ufw_system_service_ufw_status.unitfilepreset is defined) and (ufw_system_service_ufw_status.unitfilepreset != "enabled")) or
         ((ufw_system_service_ufw_status.unitfilestate is defined) and (ufw_system_service_ufw_status.unitfilestate != "enabled"))
 
     - name: UFW started as it needs to be started before it can be configured
