@@ -151,9 +151,9 @@ argument_specs:
         required: false
         description: Internal dictionary for the results from community.general.systemd_info.
       ufw_system_service_status:
-        type: dict
+        type: list
         required: false
-        description: Internal dictionary for the systemd services info.
+        description: Internal list of the systemd services info.
       ufw_system_service:
         type: dict
         required: false
