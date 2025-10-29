@@ -50,10 +50,6 @@
         - ufw_pkgs_present.changed is defined
         - ufw_pkgs_present.changed | bool
 
-    - name: End role as UFW ufw_apt_only is true
-      ansible.builtin.meta: end_role
-      when: ufw_apt_only | bool
-
     - name: "Stat {{ ufw_systemd_service_file }}"
       ansible.builtin.stat:
         path: "{{ ufw_systemd_service_file }}"
@@ -101,6 +97,10 @@
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
       tags:
         - debug
+
+    - name: End role as UFW ufw_apt_only is true
+      ansible.builtin.meta: end_role
+      when: ufw_apt_only | bool
 
     - name: Include the UFW check tasks
       ansible.builtin.include_tasks: checks.yml
