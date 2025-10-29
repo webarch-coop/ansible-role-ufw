@@ -81,21 +81,6 @@
       tags:
         - debug
 
-    - name: Debug
-      ansible.builtin.fail:
-
-    #    - name: Check the systemd status for UFW
-    #      community.general.systemd_info:
-    #        unitname:
-    #          - "{{ ufw_systemd_service_name }}"
-    #      register: ufw_system_service_info
-
-    #    - name: Set a fact for the systemd status for UFW
-    #      ansible.builtin.set_fact:
-    #        ufw_system_service_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_status_jpq) }}"
-    #      vars:
-    #        ufw_system_service_status_jpq: "[?key=='{{ ufw_systemd_service_name }}'].value|[0]"
-
     - name: Enable the firewall as it needs to be enabled before it can be configured
       community.general.ufw:
         state: enabled
@@ -103,7 +88,6 @@
         (ufw_system_service_ufw_status == {}) or
         ((ufw_system_service_ufw_status.unitfilepreset is defined) and (unitfilepreset.unitfilepreset != "enabled")) or
         ((ufw_system_service_ufw_status.unitfilestate is defined) and (ufw_system_service_ufw_status.unitfilestate != "enabled"))
-      notify: Restart ufw
 
     - name: UFW started as it needs to be started before it can be configured
       ansible.builtin.service:
