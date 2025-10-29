@@ -27,34 +27,18 @@
 
     - name: Debug existing app configuration
       ansible.builtin.debug:
-        msg: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_query) | default(null) }}"
+        msg: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) }}"
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       vars:
-        ufw_apps_available_query: "{{ ufw_app.app | ansible.builtin.quote }}"
+        ufw_apps_available_jpq: "{{ ufw_app.app | ansible.builtin.quote }}"
       tags:
         - debug
 
     - name: Set a variable for the existing app configuration
       ansible.builtin.set_fact:
-        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_query) | default(null) }}"
+        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) }}"
       vars:
-        ufw_apps_available_query: "{{ ufw_app.app | ansible.builtin.quote }}"
-      when:
-        - ufw_apps_available is defined
-        - ufw_apps_available != {}
-
-    - name: Debug UFW existing app configuration
-      ansible.builtin.debug:
-        var: ufw_app_existing_conf
-        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
-      when: ufw_app_existing_conf is defined
-      tags:
-        - debug
-
-    - name: Set a variable for the existing app configuration
-      ansible.builtin.set_fact:
-        ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_app.app) | default(null) }}"
-
+        ufw_apps_available_jpq: "{{ ufw_app.app | ansible.builtin.quote }}"
       when:
         - ufw_apps_available is defined
         - ufw_apps_available != {}
@@ -80,7 +64,7 @@
         default: "{{ ufw_status | community.general.json_query(ufw_app_rule_default_jpq) | lower }}"
         delete: true
       vars:
-        ufw_app_rule_default_jpq: "rules[?to_service=='{{ ufw_app.app }}'].action|[0]"
+        ufw_app_rule_default_jpq: "rules[?to_service=={{ ufw_app.app | ansible.builtin.quote }}].action|[0]"
       when:
         - ufw_status is defined
         - ufw_apps_enabled is defined
