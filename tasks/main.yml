@@ -114,8 +114,8 @@
           - "UFW ufw_app: {{ ufw_app | ansible.builtin.to_nice_yaml }}"
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
       vars:
-        ufw_app_desc_jpq: "[?key=={{ ufw_app.app | ansible.builtin.quote }}].value|[0].description"
-        ufw_app_ports_jpq: "[?key=={{ ufw_app.app | ansible.builtin.quote }}].value|[0].ports"
+        ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
+        ufw_app_ports_jpq: "[?key=='{{ ufw_app.app  }}'].value|[0].ports"
       loop: "{{ ufw_apps }}"
       loop_control:
         loop_var: ufw_app
@@ -129,8 +129,8 @@
     - name: UFW applications present
       ansible.builtin.include_tasks: app_present.yml
       vars:
-        ufw_app_desc_jpq: "[?key=={{ ufw_app.app | ansible.builtin.quote }}].value|[0].description"
-        ufw_app_ports_jpq: "[?key=={{ ufw_app.app | ansible.builtin.quote }}].value|[0].ports"
+        ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
+        ufw_app_ports_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].ports"
       loop: "{{ ufw_apps }}"
       loop_control:
         loop_var: ufw_app

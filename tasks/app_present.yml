@@ -30,7 +30,7 @@
         msg: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) }}"
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       vars:
-        ufw_apps_available_jpq: "{{ ufw_app.app | ansible.builtin.quote }}"
+        ufw_apps_available_jpq: "'{{ ufw_app.app }}'"
       tags:
         - debug
 
@@ -38,7 +38,7 @@
       ansible.builtin.set_fact:
         ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) }}"
       vars:
-        ufw_apps_available_jpq: "{{ ufw_app.app | ansible.builtin.quote }}"
+        ufw_apps_available_jpq: "'{{ ufw_app.app }}'"
       when:
         - ufw_apps_available is defined
         - ufw_apps_available != {}
@@ -64,7 +64,7 @@
         default: "{{ ufw_status | community.general.json_query(ufw_app_rule_default_jpq) | lower }}"
         delete: true
       vars:
-        ufw_app_rule_default_jpq: "rules[?to_service=={{ ufw_app.app | ansible.builtin.quote }}].action|[0]"
+        ufw_app_rule_default_jpq: "rules[?to_service=='{{ ufw_app.app }}'].action|[0]"
       when:
         - ufw_status is defined
         - ufw_apps_enabled is defined
