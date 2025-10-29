@@ -62,7 +62,7 @@
       ansible.builtin.set_fact:
         ufw_system_service_status: "{{ ufw_system_service_info.units | ansible.builtin.dict2items }}"
         ufw_system_service_ufw_status: >-
-          {%- if ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_ufw_status_jpq) == "null" -%}{}{%- else -%}
+          {%- if ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_ufw_status_jpq) | ansible.builtin.type_debug != "dict" -%}{}{%- else -%}
           {{- ufw_system_service_info.units | ansible.builtin.dict2items | community.general.json_query(ufw_system_service_ufw_status_jpq) -}}{%- endif -%}
       vars:
         ufw_system_service_ufw_status_jpq: "[?key=='{{ ufw_systemd_service_name }}'].value|[0]"
