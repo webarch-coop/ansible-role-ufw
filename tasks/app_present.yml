@@ -30,7 +30,7 @@
         msg: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_query) | default(null) }}"
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       vars:
-        ufw_apps_available_query: "{{ ufw_app.app | ansible.builtin.regex_replace(' ', '\ ') }}"
+        ufw_apps_available_query: "{{ ufw_app.app | ansible.builtin.quote }}"
       tags:
         - debug
 
@@ -38,7 +38,7 @@
       ansible.builtin.set_fact:
         ufw_app_existing_conf: "{{ ufw_apps_available | community.general.json_query(ufw_apps_available_query) | default(null) }}"
       vars:
-        ufw_apps_available_query: "{{ ufw_app.app }}"
+        ufw_apps_available_query: "{{ ufw_app.app | ansible.builtin.quote }}"
       when:
         - ufw_apps_available is defined
         - ufw_apps_available != {}
