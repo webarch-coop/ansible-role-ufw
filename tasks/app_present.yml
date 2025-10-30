@@ -11,23 +11,24 @@
 - name: UFW application file
   block:
 
+    - name: Debug ufw_app
+      ansible.builtin.debug:
+        var: ufw_app
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
+
     - name: Set a variable for the app default path and set ufw_app_title, ufw_app_description and ufw_app_ports to empty dicts
       ansible.builtin.set_fact:
         ufw_app_default_path: "/etc/ufw/applications.d/{{ ufw_app.app | lower | ansible.builtin.regex_replace(' ', '_') | ansible.builtin.regex_search('^[a-z0-9_]{1,24}') }}"
         ufw_app_description: {}
+        ufw_app_existing_conf: {}
         ufw_app_ports: {}
         ufw_app_title: {}
 
     - name: Debug ufw_app_default_path
       ansible.builtin.debug:
         var: ufw_app_default_path
-        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
-      tags:
-        - debug
-
-    - name: Debug ufw_app
-      ansible.builtin.debug:
-        var: ufw_app
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       tags:
         - debug
