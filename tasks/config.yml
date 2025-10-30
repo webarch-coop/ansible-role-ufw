@@ -45,7 +45,7 @@
       tags:
         - debug
 
-    - name: Loop through the configuration
+    - name: Loop through the UFW configuration
       community.general.ini_file:
         path: "{{ ufw_conf.path }}"
         create: true
@@ -65,8 +65,8 @@
         - Enable ufw
         - Restart ufw
       when: >-
-        ( not ufw_conf_path.stat.exists | bool ) or
-        ( ufw_cfg not in ufw_conf_file_contents )
+        (not ufw_conf_path.stat.exists | bool) or
+        (ufw_cfg not in ufw_conf_file_contents)
 
   tags:
     - ufw

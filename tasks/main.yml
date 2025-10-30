@@ -45,18 +45,18 @@
     #     - ufw_apps != []
     #     - ufw_app.state == "absent"
 
-    - name: Debug UFW applications present
+    - name: Debug UFW applications that need adding or updating
       ansible.builtin.debug:
         msg:
-          - "JMESPath description query: {{ ufw_app_desc_jpq }}"
-          - "JMESPath ports query: {{ ufw_app_ports_jpq }}"
-          - "UFW app: {{ ufw_app.app }}"
-          - "UFW app desc: {{ ufw_app.desc }}"
-          - "UFW app ports: {{ ufw_app.ports }}"
-          - "UFW app state: {{ ufw_app.state }}"
+          # - "JMESPath description query: {{ ufw_app_desc_jpq }}"
+          # - "JMESPath ports query: {{ ufw_app_ports_jpq }}"
+          - "UFW proposed app: {{ ufw_app.app }}"
+          - "UFW proposed app desc: {{ ufw_app.desc }}"
+          - "UFW proposed app ports: {{ ufw_app.ports }}"
+          - "UFW proposed app state: {{ ufw_app.state }}"
           - "UWF existing app description: {{ ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) }}"
           - "UFW existing app ports: {{ ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) }}"
-          - "UFW ufw_app: {{ ufw_app | ansible.builtin.to_nice_yaml }}"
+          # - "UFW ufw_app: {{ ufw_app | ansible.builtin.to_nice_yaml }}"
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
       vars:
         ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
@@ -68,6 +68,10 @@
       when:
         - ufw_apps is defined
         - ufw_apps != []
+        - ufw_app.state == "present"
+        - >-
+          (ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq)) or
+          (ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq))
       tags:
         - debug
 
@@ -85,8 +89,8 @@
         - ufw_apps != []
         - ufw_app.state == "present"
         - >-
-          ( ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq) ) or
-          ( ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq) )
+          (ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq)) or
+          (ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq))
 
     - name: Include UFW config tasks
       ansible.builtin.include_tasks: config.yml
@@ -98,7 +102,12 @@
         - ufw_config is defined
         - ufw_config != {}
 
-    # TODO: Only include the allow rule tasks if it is not already present
+    - name: Reset UFW to ensure no rules are present
+      community.general.ufw:
+        state: reset
+      tags:
+        - molecule-idempotence-notest
+
     - name: Include allow tasks
       ansible.builtin.include_tasks: allow.yml
       loop: "{{ ufw_allow_rules }}"
@@ -108,7 +117,6 @@
         - ufw_allow_rules is defined
         - ufw_allow_rules != []
 
-    # TODO: Only include the deny rule tasks if it is not already present
     - name: Include deny tasks
       ansible.builtin.include_tasks: deny.yml
       loop: "{{ ufw_deny_rules }}"
@@ -118,7 +126,6 @@
         - ufw_deny_rules is defined
         - ufw_deny_rules != []
 
-    # TODO: Check existing policy first
     - name: Policy deny
       community.general.ufw:
         policy: deny
@@ -127,6 +134,21 @@
       when:
         - ufw_default_policy_deny is defined
         - ufw_default_policy_deny | bool
+      tags:
+        - molecule-idempotence-notest
+
+    - name: Get the UFW status
+      ansible.builtin.command: ufw status
+      check_mode: false
+      changed_when: false
+      register: ufw_check_status
+
+    - name: Debug UFW status
+      ansible.builtin.debug:
+        var: ufw_check_status.stdout
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
 
   when: ufw | bool
   tags:

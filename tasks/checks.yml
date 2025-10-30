@@ -144,11 +144,18 @@
       changed_when: false
       register: ufw_check_status
 
+    - name: Debug UFW status
+      ansible.builtin.debug:
+        var: ufw_check_status.stdout
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
+
     - name: Set a fact for the UFW status
       ansible.builtin.set_fact:
         ufw_status: "{{ ufw_check_status.stdout | string | community.general.jc('ufw') }}"
 
-    - name: Debug UFW status
+    - name: Debug ufw_status
       ansible.builtin.debug:
         var: ufw_status
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"

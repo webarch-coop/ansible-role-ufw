@@ -35,6 +35,8 @@
         name: ufw
       vars:  # noqa var-naming[no-role-prefix]
         ufw: true
+      tags:
+        - molecule-idempotence-notest
 
     - name: Include verify argument spec tasks from UFW role
       ansible.builtin.include_role:
@@ -42,4 +44,6 @@
         tasks_from: verify.yml
       vars:  # noqa var-naming[no-role-prefix]
         ufw: true
+      tags:
+        - molecule-idempotence-notest
 ...

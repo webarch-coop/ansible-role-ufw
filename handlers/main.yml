@@ -18,6 +18,16 @@
     state: enabled
   listen: Enable ufw
 
+- name: Reload ufw
+  community.general.ufw:
+    state: reloaded
+  listen: Reload ufw
+
+- name: Reset ufw
+  community.general.ufw:
+    state: reset
+  listen: Reset ufw
+
 - name: Restart ufw
   ansible.builtin.service:
     name: ufw

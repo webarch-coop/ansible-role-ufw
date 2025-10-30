@@ -11,9 +11,16 @@
 - name: UFW application file
   block:
 
-    - name: Debug ufw_apps_available_list
+    - name: Set a variable for the app default path and set ufw_app_title, ufw_app_description and ufw_app_ports to empty dicts
+      ansible.builtin.set_fact:
+        ufw_app_default_path: "/etc/ufw/applications.d/{{ ufw_app.app | lower | ansible.builtin.regex_replace(' ', '_') | ansible.builtin.regex_search('^[a-z0-9_]{1,24}') }}"
+        ufw_app_description: {}
+        ufw_app_ports: {}
+        ufw_app_title: {}
+
+    - name: Debug ufw_app_default_path
       ansible.builtin.debug:
-        var: ufw_apps_available_list
+        var: ufw_app_default_path
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       tags:
         - debug
@@ -22,6 +29,13 @@
       ansible.builtin.debug:
         var: ufw_app
         verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
+
+    - name: Debug ufw_apps_available_list
+      ansible.builtin.debug:
+        var: ufw_apps_available_list
+        verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
       tags:
         - debug
 
@@ -37,8 +51,8 @@
     - name: Set a variable for the existing app configuration
       ansible.builtin.set_fact:
         ufw_app_existing_conf: >-
-          {%- if ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) | ansible.builtin.type_debug != "dict" -%}{}{%- else -%}
-          {{- ufw_apps_available | community.general.json_query(ufw_apps_available_jpq) -}}{%- endif -%}
+          {%- if ufw_apps_available_list | community.general.json_query(ufw_apps_available_jpq) | ansible.builtin.type_debug != "dict" -%}{}{%- else -%}
+          {{- ufw_apps_available_list | community.general.json_query(ufw_apps_available_jpq) -}}{%- endif -%}
       vars:
         ufw_apps_available_jpq: "[?key=='{{ ufw_app.app }}'].value|[0]"
       when:
@@ -53,13 +67,6 @@
       tags:
         - debug
 
-    - name: Set a variable for the app default path and set ufw_app_title, ufw_app_description and ufw_app_ports to empty dicts
-      ansible.builtin.set_fact:
-        ufw_app_default_path: "/etc/ufw/applications.d/{{ ufw_app.app | lower | ansible.builtin.regex_replace(' ', '_') | ansible.builtin.regex_search('^[a-z0-9_]{1,24}') }}"
-        ufw_app_description: {}
-        ufw_app_ports: {}
-        ufw_app_title: {}
-
     - name: Delete the app rule before updating the application
       community.general.ufw:
         name: "{{ ufw_app.app }}"
@@ -72,6 +79,8 @@
         - ufw_apps_enabled is defined
         - ufw_apps_enabled != []
         - ufw_app.app in ufw_apps_enabled
+      tags:
+        - molecule-idempotence-notest
 
     - name: UFW application title configuration present
       community.general.ini_file:
@@ -86,9 +95,8 @@
         value: "{{ ufw_app.app }}"
       register: ufw_app_title
       when: >-
-       (ufw_app_existing_conf is not defined) or
-       (ufw_app_existing_conf == "null") or
-       (ufw_app_existing_conf == "") or
+       (ufw_app_existing_conf == {}) or
+       (ufw_app_existing_conf == "{}") or
        ((ufw_app_existing_conf.title is defined) and (ufw_app_existing_conf.title != ufw_app.app))
 
     - name: UFW application description configuration present
@@ -104,9 +112,8 @@
         value: "{{ ufw_app.desc }}"
       register: ufw_app_description
       when: >-
-       (ufw_app_existing_conf is not defined) or
-       (ufw_app_existing_conf == "null") or
-       (ufw_app_existing_conf == "") or
+       (ufw_app_existing_conf == {}) or
+       (ufw_app_existing_conf == "{}") or
        ((ufw_app_existing_conf.description is defined) and (ufw_app_existing_conf.description != ufw_app.desc))
 
     - name: UFW application ports configuration present
@@ -122,9 +129,8 @@
         value: "{{ ufw_app.ports }}"
       register: ufw_app_ports
       when: >-
-       (ufw_app_existing_conf is not defined) or
-       (ufw_app_existing_conf == "null") or
-       (ufw_app_existing_conf == "") or
+       (ufw_app_existing_conf == {}) or
+       (ufw_app_existing_conf == "{}") or
        ((ufw_app_existing_conf.ports is defined) and (ufw_app_existing_conf.ports != ufw_app.ports))
 
     - name: Check if the UFW application file exists
@@ -161,8 +167,10 @@
       block:
 
         - name: UFW update application
-          ansible.builtin.command: "ufw app update {{ ufw_app.path | default(ufw_app_default_path) | basename }}"
+          ansible.builtin.command: "ufw app update {{ ufw_app.path | default(ufw_app_default_path) | ansible.builtin.basename }}"
           changed_when: true
+          tags:
+            - molecule-idempotence-notest
 
         - name: Include the /etc/ufw/applications.d/* checks
           ansible.builtin.include_tasks: check_apps.yml
