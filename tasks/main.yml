@@ -146,7 +146,6 @@
     - name: Debug UFW status
       ansible.builtin.debug:
         var: ufw_check_status.stdout
-        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
       tags:
         - debug
 
