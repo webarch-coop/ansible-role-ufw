@@ -130,6 +130,10 @@ argument_specs:
         type: dict
         required: false
         description: Internal dictionry for the result of stat'ing the configuration file path.
+      ufw_enabled:
+        type: dict
+        required: false
+        description: Internal dictionry for the result of enabling UFW.
       ufw_internal_argument_spec:
         type: dict
         required: false

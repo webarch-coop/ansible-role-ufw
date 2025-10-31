@@ -137,6 +137,18 @@
       tags:
         - molecule-idempotence-notest
 
+    - name: UFW enabled
+      community.general.ufw:
+        state: enabled
+      register: ufw_enabled
+
+    - name: Debug ufw_enabled
+      ansible.builtin.debug:
+        var: ufw_enabled
+        verbosity: "{% if ansible_check_mode | bool %}0{% else %}1{% endif %}"
+      tags:
+        - debug
+
     - name: Get the UFW status
       ansible.builtin.command: ufw status
       check_mode: false
