@@ -44,7 +44,7 @@
 
     - name: The UFW systemd configuration file is missing
       ansible.builtin.fail:
-        fail_msg: "The {{ ufw_systemd_service_file }} file could not be found."
+        msg: "The {{ ufw_systemd_service_file }} file could not be found."
       when: not ufw_system_service.stat.exists | bool
 
     - name: Check the systemd info
