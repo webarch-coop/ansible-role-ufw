@@ -15,6 +15,7 @@ ufw_apps:
   - app: DoH
     desc: DNS over HTTPS
     ports: 853/tcp
+    state: present
   - app: Elasticsearch
     desc: Elasticsearch is a distributed, multitenant-capable full-text search engine.
     ports: 9200/tcp
