@@ -27,8 +27,8 @@
     - name: Read the contents of all the files in /etc/ufw/applications.d
       block:
 
-        - name: Cat and register the contents of all the files in /etc/ufw/applications.d
-          ansible.builtin.shell: cat /etc/ufw/applications.d/*
+        - name: Find, cat and register the contents of all the files in /etc/ufw/applications.d
+          ansible.builtin.shell: find /etc/ufw/applications.d -type f -exec cat {} \;
           args:
             executable: "{{ ansible_facts.ansible_local.bash.path }}"
           check_mode: false
