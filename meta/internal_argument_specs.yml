@@ -71,6 +71,34 @@ argument_specs:
         type: dict
         required: false
         description: Internal dictionary for the result of ansible.builtin.stat.
+      ufw_apps_absent:
+        type: list
+        elements: dict
+        required: false
+        description: Internal generated list of apps absent.
+        options:
+          app:
+            type: str
+            required: false
+            description: The UFW application name and title.
+          desc:
+            type: str
+            required: false
+            description: The UFW application description.
+          path:
+            type: str
+            required: true
+            description: The UFW application file path.
+          ports:
+            type: str
+            required: false
+            description: The UFW application ports.
+          state:
+            type: str
+            required: true
+            description: The UFW application state.
+            choices:
+              - absent
       ufw_apps_available_d:
         type: dict
         required: false
@@ -92,6 +120,34 @@ argument_specs:
         elements: str
         required: false
         description: Internal list of enabled apps.
+      ufw_apps_present:
+        type: list
+        elements: dict
+        required: false
+        description: Internal generated list of apps absent.
+        options:
+          app:
+            type: str
+            required: true
+            description: The UFW application name and title.
+          desc:
+            type: str
+            required: true
+            description: The UFW application description.
+          path:
+            type: str
+            required: false
+            description: The UFW application file path.
+          ports:
+            type: str
+            required: true
+            description: The UFW application ports.
+          state:
+            type: str
+            required: true
+            description: The UFW application state.
+            choices:
+              - present
       ufw_apps_proposed:
         type: list
         elements: str
@@ -166,4 +222,8 @@ argument_specs:
         type: dict
         required: false
         description: Internal dictionary for the UFW systemd status.
+      ufw_validation_conditions:
+        type: list
+        required: true
+        description: Internal list of variable validation conditions.
 ...

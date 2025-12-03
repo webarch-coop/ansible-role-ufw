@@ -30,20 +30,28 @@
     - name: Include the UFW check tasks
       ansible.builtin.include_tasks: checks.yml
 
-    # TODO
-    # - name: UFW applications absent
-    #   ansible.builtin.include_tasks: app_absent.yml
-    #   vars:
-    #     ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
-    #     ufw_app_ports_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].ports"
-    #   loop: "{{ ufw_apps }}"
-    #   loop_control:
-    #     loop_var: ufw_app
-    #     label: "{{ ufw_app.app }}"
-    #   when:
-    #     - ufw_apps is defined
-    #     - ufw_apps != []
-    #     - ufw_app.state == "absent"
+    - name: Debug UFW application paths absent
+      ansible.builtin.debug:
+        var: ufw_app.path
+      loop: "{{ ufw_apps_absent }}"
+      loop_control:
+        loop_var: ufw_app
+        label: "{{ ufw_app.app }}"
+      when:
+        - ufw_apps_absent is defined
+        - ufw_apps_absent != []
+
+    - name: UFW applications absent
+      ansible.builtin.file:
+        path: "{{ ufw_app.path }}"
+        state: absent
+      loop: "{{ ufw_apps_absent }}"
+      loop_control:
+        loop_var: ufw_app
+        label: "{{ ufw_app.app }}"
+      when:
+        - ufw_apps_absent is defined
+        - ufw_apps_absent != []
 
     - name: Debug UFW applications that need adding or updating
       ansible.builtin.debug:
@@ -60,15 +68,14 @@
         verbosity: "{% if ansible_check_mode | bool %}1{% else %}2{% endif %}"
       vars:
         ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
-        ufw_app_ports_jpq: "[?key=='{{ ufw_app.app  }}'].value|[0].ports"
-      loop: "{{ ufw_apps }}"
+        ufw_app_ports_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].ports"
+      loop: "{{ ufw_apps_present }}"
       loop_control:
         loop_var: ufw_app
         label: "{{ ufw_app.app }}"
       when:
-        - ufw_apps is defined
-        - ufw_apps != []
-        - ufw_app.state == "present"
+        - ufw_apps_present is defined
+        - ufw_apps_present != []
         - >-
           (ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq)) or
           (ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq))
@@ -80,14 +87,13 @@
       vars:
         ufw_app_desc_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].description"
         ufw_app_ports_jpq: "[?key=='{{ ufw_app.app }}'].value|[0].ports"
-      loop: "{{ ufw_apps }}"
+      loop: "{{ ufw_apps_present }}"
       loop_control:
         loop_var: ufw_app
         label: "{{ ufw_app.app }}"
       when:
-        - ufw_apps is defined
-        - ufw_apps != []
-        - ufw_app.state == "present"
+        - ufw_apps_present is defined
+        - ufw_apps_present != []
         - >-
           (ufw_app.desc != ufw_apps_available_list | community.general.json_query(ufw_app_desc_jpq)) or
           (ufw_app.ports != ufw_apps_available_list | community.general.json_query(ufw_app_ports_jpq))

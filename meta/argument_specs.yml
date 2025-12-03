@@ -64,7 +64,7 @@ argument_specs:
             description: The UFW application name and title.
           desc:
             type: str
-            required: true
+            required: false
             description: The UFW application description.
           path:
             type: str
@@ -72,7 +72,7 @@ argument_specs:
             description: The UFW application file path.
           ports:
             type: str
-            required: true
+            required: false
             description: The UFW application ports.
           state:
             type: str
@@ -146,6 +146,12 @@ argument_specs:
         type: str
         required: true
         description: Name of the UFW systemd service unit file devived using the basename filter on the UFW systemd service unit file path.
+      ufw_validation:
+        type: bool
+        required: true
+        choices:
+          - true
+        description: Validate role variable conditions.
       ufw_verify:
         type: bool
         required: false

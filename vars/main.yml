@@ -14,6 +14,17 @@ ansible_managed: "Ansible managed"
 ufwvarnames: "{{ q('varnames', '^ufw_') | sort }}"
 ufwhostvars: "{{ dict(ufwvarnames | list | zip(q('vars', *ufwvarnames))) }}"
 
+# https://forum.ansible.com/t/validating-inventory-against-argument-specs/10748/10
+ufw_validation_conditions:
+ - >-
+   {# ensure that the paths for app that are absent starts with /etc/ufw/applications.d #}
+   {% if (ufw_apps_absent is defined) and (ufw_apps_absent != []) %}
+   {%     for ufw_app in ufw_apps_absent %}
+   {{         ufw_app.path | ansible.builtin.regex_search('^[/]etc[/]ufw[/]applications[.]d[/]') != None }}
+   {%     endfor %}
+   {% endif %}
+ufw_validation: "{{ ufw_validation_conditions is ansible.builtin.all }}"
+
 ufw_systemd_service_name: "{{ ufw_systemd_service_file | ansible.builtin.basename }}"
 
 ufw_app_allow_rules: "{{ ufw_allow_rules | community.general.json_query('[].app') }}"
@@ -32,7 +43,9 @@ ufw_status: {}
 # cat /etc/ufw/applications.d/* | jc --ini -p | jq 'keys' | yq -o=json -P
 ufw_apps_available_names: "{{ ufw_apps_available.keys() }}"
 
+ufw_apps_absent: "{{ ufw_apps | community.general.json_query('[?state==`absent`]') }}"
 ufw_apps_enabled: "{{ ufw_status | community.general.json_query('rules[*].to_service') }}"
+ufw_apps_present: "{{ ufw_apps | community.general.json_query('[?state==`present`]') }}"
 ufw_apps_proposed: "{{ ufw_apps | community.general.json_query('[].app') }}"
 ufw_apps_proposed_but_absent: "{{ ufw_apps_proposed | ansible.builtin.difference(ufw_apps_available_names) }}"
 ...

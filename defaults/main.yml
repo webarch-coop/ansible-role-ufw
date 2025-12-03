@@ -40,6 +40,12 @@ ufw_apps:
     desc: Client push update notifications for Nextcloud clients.
     ports: 7867/tcp
     state: present
+  - app: OpenSSH  # This is installed by OpenSSH, SSH below should be used
+    path: /etc/ufw/applications.d/openssh
+    state: absent
+  - app: OpenSSH Server  # This was installed by an old version of this role, SSH below should be used
+    path: /etc/ufw/applications.d/openssh-server
+    state: absent
   - app: PostgreSQL
     desc: PostgreSQL is a powerful, open source object-relational database system.
     ports: 5432/tcp
