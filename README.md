@@ -11,7 +11,8 @@ An example configuration to only allow SSH and web taffic on ports 80 and 443 us
 ```yml
 ufw: true
 ufw_allow_rules:
-  - app: OpenSSH
+  - app: Mosh
+  - app: SSH
   - app: WWW Full
 ufw_config:
   - path: /etc/default/ufw
@@ -250,7 +251,7 @@ mosh:
   title: Mosh (mobile shell)
   description: Mobile shell that supports roaming and intelligent local echo
   ports: 60000:61000/udp
-OpenSSH:
+SSH:
   title: Secure shell server, an rshd replacement
   description: OpenSSH is a free implementation of the Secure Shell protocol.
   ports: 22/tcp
