@@ -30,6 +30,16 @@
       ansible.builtin.debug:
         var: ansible_facts.user_dir
 
+    - name: List files in /etc/ufw/applications.d
+      ansible.builtin.find:
+        paths: /etc/ufw/applications.d
+        recurse: true
+      register: molecule_ufw_apps
+
+    - name: Debug molecule_ufw_apps
+      ansible.builtin.debug:
+        var: molecule_ufw_apps
+
     - name: Include UFW role
       ansible.builtin.include_role:
         name: ufw
