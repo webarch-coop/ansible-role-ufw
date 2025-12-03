@@ -16,13 +16,27 @@ ufwhostvars: "{{ dict(ufwvarnames | list | zip(q('vars', *ufwvarnames))) }}"
 
 # https://forum.ansible.com/t/validating-inventory-against-argument-specs/10748/10
 ufw_validation_conditions:
- - >-
-   {# ensure that the paths for app that are absent starts with /etc/ufw/applications.d #}
-   {% if (ufw_apps_absent is defined) and (ufw_apps_absent != []) %}
-   {%     for ufw_app in ufw_apps_absent %}
-   {{         ufw_app.path | ansible.builtin.regex_search('^[/]etc[/]ufw[/]applications[.]d[/]') != None }}
-   {%     endfor %}
-   {% endif %}
+  - >-
+    {# Loop through the apps that are absent to check the path starts with /etc/ufw/applications.d #}
+    {% if (ufw_apps_absent is defined) and (ufw_apps_absent != []) %}
+    {%     for ufw_app in ufw_apps_absent %}
+    {{         ufw_app.path | ansible.builtin.regex_search('^[/]etc[/]ufw[/]applications[.]d[/]') != None }}
+    {%     endfor %}
+    {% endif %}
+  - >-
+    {# Loop through the allow rules to check that they have either app or ports and proto specified #}
+    {% if (ufw_allow_rules is defined) and (ufw_allow_rules != []) %}
+    {%     for ufw_rule in ufw_allow_rules %}
+    {{         (ufw_rule.app is defined) or ((ufw_rule.port is defined) and (ufw_rule.proto is defined)) }}
+    {%     endfor %}
+    {% endif %}
+  - >-
+    {# Loop through the deny rules to check that they have either app or ports and proto specified #}
+    {% if (ufw_deny_rules is defined) and (ufw_deny_rules != []) %}
+    {%     for ufw_rule in ufw_deny_rules %}
+    {{         (ufw_rule.app is defined) or ((ufw_rule.port is defined) and (ufw_rule.proto is defined)) }}
+    {%     endfor %}
+    {% endif %}
 ufw_validation: "{{ ufw_validation_conditions is ansible.builtin.all }}"
 
 ufw_systemd_service_name: "{{ ufw_systemd_service_file | ansible.builtin.basename }}"
