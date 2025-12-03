@@ -36,9 +36,9 @@
         recurse: true
       register: molecule_ufw_apps
 
-    - name: Debug molecule_ufw_apps
+    - name: Debug molecule_ufw_apps.files
       ansible.builtin.debug:
-        var: molecule_ufw_apps
+        var: molecule_ufw_apps.files
 
     - name: Include UFW role
       ansible.builtin.include_role:

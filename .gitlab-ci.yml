@@ -38,7 +38,6 @@ stages:
   # - lint
   # - bookworm
   # - forky
-  # Ubuntu Noble doesn't have a SSH app by default so the Molecule CI fails
   - noble
   # - trixie
 # lint:
@@ -61,6 +60,9 @@ noble:
   image: registry.git.coop/webarch/containers/images/noble:20251201
   stage: noble
   script:
+    # Ubuntu Noble doesn't have a SSH app by default so the Molecule CI fails
+    - mkdir -p /etc/ufw/applications.d
+    - cp files/ssh.conf /etc/ufw/applications.d/ssh
     - molecule test --all
 # trixie:
 #   image: registry.git.coop/webarch/containers/images/trixie:20251201
