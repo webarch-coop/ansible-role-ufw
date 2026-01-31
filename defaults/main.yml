@@ -43,6 +43,7 @@ ufw_apps:
   - app: ONLYOFFICE
     desc: ONLYOFFICE Document Server.
     ports: 8000/tcp
+    state: present
   - app: ONLYOFFICE info
     desc: ONLYOFFICE info.
     ports: 82/tcp
