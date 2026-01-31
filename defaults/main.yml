@@ -1,4 +1,4 @@
-# Copyright 2020-2025 Luke Murphy and Chris Croome
+# Copyright 2020-2026 Luke Murphy and Chris Croome
 #
 # This file is part of the Webarchitects Uncomplicated Firewall (UFW) Ansible role.
 #
@@ -30,7 +30,7 @@ ufw_apps:
     state: present
   - app: Mosh
     desc: Mobile shell that supports roaming and intelligent local echo.
-    ports: "60000:61000/udp"
+    ports: 60000:61000/udp
     state: present
   - app: Munin
     desc: Munin monitoring.
@@ -40,6 +40,9 @@ ufw_apps:
     desc: Client push update notifications for Nextcloud clients.
     ports: 7867/tcp
     state: present
+  # - app: ONLYOFFICE
+  #   desc: ONLYOFFICE Document Server.
+  #   ports: 8000/tcp
   - app: OpenSSH  # This is installed by OpenSSH, SSH below should be used
     path: /etc/ufw/applications.d/openssh
     state: absent
