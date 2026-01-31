@@ -40,9 +40,13 @@ ufw_apps:
     desc: Client push update notifications for Nextcloud clients.
     ports: 7867/tcp
     state: present
-  # - app: ONLYOFFICE
-  #   desc: ONLYOFFICE Document Server.
-  #   ports: 8000/tcp
+  - app: ONLYOFFICE
+    desc: ONLYOFFICE Document Server.
+    ports: 8000/tcp
+  - app: ONLYOFFICE info
+    desc: ONLYOFFICE info.
+    ports: 82/tcp
+    state: present
   - app: OpenSSH  # This is installed by OpenSSH, SSH below should be used
     path: /etc/ufw/applications.d/openssh
     state: absent
